@@ -75,7 +75,7 @@ def prob_calculater(present_dna, last_dna):
         present_dna[i, 2, 6] = 0.25 * (last_dna[i - 2, 0, 5] + last_dna[i - 2, 4, 5] + last_dna[i - 2, 6, 5])
         present_dna[i, 2, 7] = 0.25 * (last_dna[i - 2, 0, 5] + last_dna[i - 2, 4, 5] + last_dna[i - 2, 6, 5])\
                                + 0.5 * (last_dna[i - 1, 2, 5])
-        present_dna[i, 3, 0] = 0.25 * (last_dna[i - 2, 1, 6] + last_dna[i - 2, 2, 6] + last_dna[i - 2, 4, 6]
+        present_dna[i, 3, 0] = 0.25 * (last_dna[i - 2, 0, 6] + last_dna[i - 2, 2, 6] + last_dna[i - 2, 4, 6]
                                        + last_dna[i - 2, 6, 6])
         present_dna[i, 3, 1] = 0.25 * (last_dna[i - 2, 0, 6] + last_dna[i - 2, 2, 6] + last_dna[i - 2, 4, 6]
                                        + last_dna[i - 2, 6, 6])
