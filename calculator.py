@@ -1,20 +1,20 @@
 import numpy as np
 from calculation_expectation import prob_calculater
-
 #    DNA storage channel codec
 #    DNA sequence constraints
-#        Homopolymer = 3
 
-# Baseline: DNA length is 3
-DNA_3 = np.zeros([6, 8, 8])
-DNA_3[5, :] = 1 / 64
+Homopolymer = 3
+
+# Baseline
+DNA_base = np.zeros([Homopolymer * 2, 4 ** (Homopolymer - 1), 4])
+DNA_base[-1, :] = 1 / (4 ** Homopolymer)
 
 target__DNA_length__ = 100
-last_DNA = DNA_3
-for length in range(4, target__DNA_length__+1):
+last_DNA = DNA_base
+for length in range(Homopolymer+1, target__DNA_length__+1):
     print(f'DNA length is {length}')
-    _DNA_ = np.zeros([length * 2, 8, 8])
-    _DNA_ = prob_calculater(_DNA_, last_DNA)
+    _DNA_ = np.zeros([length * 2, 4 ** (Homopolymer-1), 4])
+    _DNA_ = prob_calculater(_DNA_, last_DNA, Homopolymer)
     last_DNA = _DNA_
     print(f'\tSum of probability: {np.sum(_DNA_)}')
 
