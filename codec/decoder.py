@@ -1,7 +1,8 @@
 from codec_map import Decode_Map_d2b
 
 
-def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b):
+# Get binary sequence based on DNA sequence
+def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b, dna_length=100):
     binary_seq = []
 
     # Initial state
@@ -10,7 +11,9 @@ def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b):
 
     # Read data from DNA list
     for i in range(0, len(dna_data)):
-        for j in range(0, len(dna_data[i])):
+        for j in range(0, dna_length):
+            if j == len(dna_data[i]):
+                break
             # Determine whether the homopolymer constraints are met
             if homopolymer_count < homopolymer:
                 # Convert DNA to binary
