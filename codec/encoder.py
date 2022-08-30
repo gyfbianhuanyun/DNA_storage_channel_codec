@@ -5,7 +5,7 @@ import math
 # Encoding (satisfies homopolymer constraints)
 # Get DNA sequence based on binary sequence
 def encoder_b2d_homo(binary_data, homopolymer=3, codec_map=Encode_Map_b2d, dna_length=100):
-    DNA_data_ = []
+    dna_data_ = []
     dna_seq = []
 
     # Initial state
@@ -55,15 +55,17 @@ def encoder_b2d_homo(binary_data, homopolymer=3, codec_map=Encode_Map_b2d, dna_l
 
         # Fixed DNA sequence length
         if len(dna_seq) == dna_length:
-            DNA_data_.append(dna_seq)
+            dna_data_.append(dna_seq)
             homopolymer_count = 1
             check_base = None
             dna_seq = []
-    # When the DNA sequence length does not meet the fixed length
+            flag = i + 1
+    # When the length of the DNA sequence does not meet the fixed length,
+    # delete the binary sequence corresponding to the DNA sequence
     if dna_seq:
-        DNA_data_.append(dna_seq)
+        binary_data = binary_data[:flag]
 
-    return DNA_data_
+    return binary_data, dna_data_
 
 
 # Encoding (satisfies GC content constraints)

@@ -9,9 +9,9 @@ def codec_processing(binary_data, homopolymer_, dna_length_, gc_upper, gc_lower,
     print("\tRead binary data")
 
     # Encoding (DNA data: list)
-    dna_data = encoder_b2d_homo(binary_data, homopolymer=homopolymer_, dna_length=dna_length_)
+    binary_data, dna_data = encoder_b2d_homo(binary_data, homopolymer=homopolymer_, dna_length=dna_length_)
 
-    dna_bases_num = (len(dna_data) - 1) * dna_length_ + len(dna_data[-1])
+    dna_bases_num = len(dna_data) * dna_length_
     binary_bits = len(binary_data)
     print("\tHomopolymer:")
     print(f"\t\tMapping potential: {binary_bits/dna_bases_num}(bits/nt)")
@@ -20,8 +20,8 @@ def codec_processing(binary_data, homopolymer_, dna_length_, gc_upper, gc_lower,
                                                     dna_length=dna_length_)
 
     # Calculate the expected number of bases added when GC constraints are met
-    sum_ = sum(gc_content[:len(gc_content)-1])
-    expected_gc = sum_ / (len(gc_content) - 1)
+    sum_ = sum(gc_content)
+    expected_gc = sum_ / len(gc_content)
     print(f"\tGC content:")
     print(f"\t\tGC count : {gc_count}")
     print(f"\t\tAdded    : {gc_content}")
@@ -30,13 +30,13 @@ def codec_processing(binary_data, homopolymer_, dna_length_, gc_upper, gc_lower,
     print(f"\t\tTotal number of bases added: {sum_}")
     print(f"\t\tExpected value: {expected_gc}")
 
-    dna_bases_num = 100 * (len(gc_content) - 1) + sum(gc_content[:-1])
+    dna_bases_num += sum_
     print(f"\tEncoding results:")
     print(f"\t\tMapping potential: {binary_bits/dna_bases_num}(bits/nt)")
 
     # Write DNA data to file
     write_data2file(dna_data, dna_filename)
-    print("\tEncode finished")
+    # print("\tEncode finished")
 
     # Decoder
     print("Decode start")
@@ -44,11 +44,6 @@ def codec_processing(binary_data, homopolymer_, dna_length_, gc_upper, gc_lower,
     # Read data
     dna_data_ = read_dna(dna_filename)
     print("\tRead DNA data")
-
-    dna_bases_num = 0
-    for i in range(len(dna_data_)):
-        dna_bases_num += len(dna_data_[i])
-    print(f"\t\tMapping potential: {binary_bits/dna_bases_num}(bits/nt)")
 
     # Decoding
     binary_decoder = decoder_d2b(dna_data_, homopolymer=homopolymer_, dna_length=dna_length_)
@@ -59,7 +54,7 @@ def codec_processing(binary_data, homopolymer_, dna_length_, gc_upper, gc_lower,
     # Write binary data to file
     write_data2file(binary_decoder, binary_filename, mode='decode')
 
-    print("\tDecode finished")
+    # print("\tDecode finished")
 
     if binary_decoder_list == binary_data:
         print("Codec success")
