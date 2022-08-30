@@ -3,11 +3,11 @@ import numpy as np
 #    DNA storage channel codec
 #    DNA sequence constraints
 #        Homopolymer = k
-DNA_MAP = ['A', 'C', 'G', 'T']
+#    DNA_Map = ['A', 'C', 'G', 'T']
 
 
 # Probability calculation
-def prob_calculater(present_dna, last_dna, homopolymer=3, dna_map=DNA_MAP):
+def prob_calculater(present_dna, last_dna, homopolymer=3):
     '''
     Select the last three characters in the DNA sequence and perform an inductive calculation
         DNA sequence combination of sequence length 3
@@ -33,6 +33,7 @@ def prob_calculater(present_dna, last_dna, homopolymer=3, dna_map=DNA_MAP):
     Notice: if we have k homopolymer constraint (k > 3), select the last k characters in DNA
             this should be 4^{k-1} by 4 matrix
     '''
+
     # Get DNA sequence length
     m = int(present_dna.shape[0] / 2)
 
@@ -40,22 +41,9 @@ def prob_calculater(present_dna, last_dna, homopolymer=3, dna_map=DNA_MAP):
     zero_ = np.zeros([1, present_dna.shape[1], 4])
     last_dna = np.insert(last_dna, last_dna.shape[0], values=zero_, axis=0)
 
-    # Get ACGT index in DNA map
-    list_acgt_ = [None] * 4
-    for idx in range(len(dna_map)):
-        if dna_map[idx] == 'A':
-            list_acgt_[0] = idx
-        elif dna_map[idx] == 'C':
-            list_acgt_[1] = idx
-        elif dna_map[idx] == 'G':
-            list_acgt_[2] = idx
-        else:
-            list_acgt_[3] = idx
-
     # Get special case row number (AAAA, CCCC, GGGG, TTTT)
-    gap = sum((4**i for i in range(homopolymer-1)))
-    special_case_row = np.arange(0, 4 ** (homopolymer - 1), gap)
-    acgt_row = [special_case_row[list_acgt_[i]] for i in range(len(list_acgt_))]
+    gap = sum((4**i for i in range(homopolymer - 1)))
+    acgt_row = np.arange(0, 4 ** (homopolymer - 1), gap)
 
     # Probability of getting DNA symbol based on the index
     for i in range(m, present_dna.shape[0]):
@@ -63,81 +51,33 @@ def prob_calculater(present_dna, last_dna, homopolymer=3, dna_map=DNA_MAP):
             for last in range(4):
                 tgt_last = pre % 4
                 pre_ = pre // 4
+
+                # basic case calculation
+                #   for example: present_dna[i][ACA] = last_dna[i - 2][AAC + CAC + GAC + TAC]
+                sum_ = 0
+                for num in range(4):
+                    sum_ += last_dna[i - 2, pre_ + num * 4 ** (homopolymer - 2), tgt_last]
+
                 # Special Case based on DNA map
-                # Case A
-                if pre == acgt_row[0]:
-                    # case 1: AAA or AAT
-                    if last == list_acgt_[0] or last == list_acgt_[3]:
-                        present_dna[i, pre, last] =\
-                            0.25 * (last_dna[i - 2, pre_ + list_acgt_[1] * 4 ** (homopolymer-2), tgt_last]
-                                    + last_dna[i - 2, pre_ + list_acgt_[2] * 4 ** (homopolymer-2), tgt_last]
-                                    + last_dna[i - 2, pre_ + list_acgt_[3] * 4 ** (homopolymer-2), tgt_last])
+                if pre in acgt_row:
+                    case_idx = np.where(acgt_row == pre)
+                    case = case_idx[0][0]
+                    sum_ = sum_ - last_dna[i - 2, pre_ + case * 4 ** (homopolymer-2), tgt_last]
+                    # Case 1: AAA AAT CCC CCG GGC GGG TTA TTT
+                    #   for example: present_dna[i][AAA] = 0.25 * last_dna[i - 2][CAA + GAA + TAA]
+                    if last == case or last == 3 - case:
+                        present_dna[i, pre, last] = 0.25 * sum_
 
-                    # case 2: AAC or AAG
+                    # Case 2: AAC AAG CCA CCT GGA GGT TTC TTG
+                    #   for example: present_dna[i][AAC] = 0.25 * last_dna[i - 2][CAA + GAA + TAA]
+                    #                                      + 0.5 * last_dna[i - 1][AAA]
                     else:
-                        present_dna[i, pre, last] = \
-                            0.25 * (last_dna[i - 2, pre_ + list_acgt_[1] * 4 ** (homopolymer-2), tgt_last]
-                                    + last_dna[i - 2, pre_ + list_acgt_[2] * 4 ** (homopolymer-2), tgt_last]
-                                    + last_dna[i - 2, pre_ + list_acgt_[3] * 4 ** (homopolymer-2), tgt_last])\
-                            + 0.5 * last_dna[i - 1, pre_ + list_acgt_[0] * 4 ** (homopolymer-2), tgt_last]
-
-                # Case C
-                elif pre == acgt_row[1]:
-                    # case 1: CCC or CCG
-                    if last == list_acgt_[1] or last == list_acgt_[2]:
-                        present_dna[i, pre, last] = \
-                            0.25 * (last_dna[i - 2, pre_ + list_acgt_[0] * 4 ** (homopolymer - 2), tgt_last]
-                                    + last_dna[i - 2, pre_ + list_acgt_[2] * 4 ** (homopolymer - 2), tgt_last]
-                                    + last_dna[i - 2, pre_ + list_acgt_[3] * 4 ** (homopolymer - 2), tgt_last])
-
-                    # case 2: CCA or CCT
-                    else:
-                        present_dna[i, pre, last] = \
-                            0.25 * (last_dna[i - 2, pre_ + list_acgt_[0] * 4 ** (homopolymer - 2), tgt_last]
-                                    + last_dna[i - 2, pre_ + list_acgt_[2] * 4 ** (homopolymer - 2), tgt_last]
-                                    + last_dna[i - 2, pre_ + list_acgt_[3] * 4 ** (homopolymer - 2), tgt_last])\
-                            + 0.5 * last_dna[i-1, pre_ + list_acgt_[1] * 4 ** (homopolymer - 2), tgt_last]
-
-                # Case G:
-                elif pre == acgt_row[2]:
-                    # case 1: GGG or GGC
-                    if last == list_acgt_[1] or last == list_acgt_[2]:
-                        present_dna[i, pre, last] = \
-                            0.25 * (last_dna[i - 2, pre_ + list_acgt_[0] * 4 ** (homopolymer - 2), tgt_last]
-                                    + last_dna[i - 2, pre_ + list_acgt_[1] * 4 ** (homopolymer - 2), tgt_last]
-                                    + last_dna[i - 2, pre_ + list_acgt_[3] * 4 ** (homopolymer - 2), tgt_last])
-
-                    # case 2: CCA or CCT
-                    else:
-                        present_dna[i, pre, last] = \
-                            0.25 * (last_dna[i - 2, pre_ + list_acgt_[0] * 4 ** (homopolymer - 2), tgt_last]
-                                    + last_dna[i - 2, pre_ + list_acgt_[1] * 4 ** (homopolymer - 2), tgt_last]
-                                    + last_dna[i - 2, pre_ + list_acgt_[3] * 4 ** (homopolymer - 2), tgt_last])\
-                            + 0.5 * last_dna[i-1, pre_ + list_acgt_[2] * 4 ** (homopolymer - 2), tgt_last]
-
-                # Case T:
-                elif pre == acgt_row[3]:
-                    # case 1: TTT or TTA
-                    if last == list_acgt_[0] or last == list_acgt_[3]:
-                        present_dna[i, pre, last] = \
-                            0.25 * (last_dna[i - 2, pre_ + list_acgt_[0] * 4 ** (homopolymer - 2), tgt_last]
-                                    + last_dna[i - 2, pre_ + list_acgt_[1] * 4 ** (homopolymer - 2), tgt_last]
-                                    + last_dna[i - 2, pre_ + list_acgt_[2] * 4 ** (homopolymer - 2), tgt_last])
-
-                    # case 2: TTC or TTG
-                    else:
-                        present_dna[i, pre, last] = \
-                            0.25 * (last_dna[i - 2, pre_ + list_acgt_[0] * 4 ** (homopolymer - 2), tgt_last]
-                                    + last_dna[i - 2, pre_ + list_acgt_[1] * 4 ** (homopolymer - 2), tgt_last]
-                                    + last_dna[i - 2, pre_ + list_acgt_[2] * 4 ** (homopolymer - 2), tgt_last]) \
-                            + 0.5 * last_dna[i - 1, pre_ + list_acgt_[3] * 4 ** (homopolymer - 2), tgt_last]
+                        value = last_dna[i - 1, pre_ + case * 4 ** (homopolymer - 2), tgt_last]
+                        present_dna[i, pre, last] = 0.25 * sum_ + 0.5 * value
 
                 # Case 3:
+                #   for example: present_dna[i][ACA] = 0.25 * last_dna[i - 2][AAC + CAC + GAC + TAC]
                 else:
-                    present_dna[i, pre, last] = \
-                        0.25 * (last_dna[i - 2, pre_, tgt_last]
-                                + last_dna[i - 2, pre_ + 4 ** (homopolymer - 2), tgt_last]
-                                + last_dna[i - 2, pre_ + 2 * 4 ** (homopolymer - 2), tgt_last]
-                                + last_dna[i - 2, pre_ + 3 * 4 ** (homopolymer - 2), tgt_last])
+                    present_dna[i, pre, last] = 0.25 * sum_
 
     return present_dna

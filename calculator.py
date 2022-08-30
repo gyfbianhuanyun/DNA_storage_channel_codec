@@ -3,25 +3,26 @@ from calculation_expectation import prob_calculater
 #    DNA storage channel codec
 #    DNA sequence constraints
 
-Homopolymer = 3
+homopolymer = 5
 
 # Baseline
-DNA_base = np.zeros([Homopolymer * 2, 4 ** (Homopolymer - 1), 4])
-DNA_base[-1, :] = 1 / (4 ** Homopolymer)
+dna_base = np.zeros([homopolymer * 2, 4 ** (homopolymer - 1), 4])
+dna_base[-1, :] = 1 / (4 ** homopolymer)
 
-target__DNA_length__ = 100
-last_DNA = DNA_base
-for length in range(Homopolymer+1, target__DNA_length__+1):
+target__dna_length__ = 100
+last_dna = dna_base
+
+for length in range(homopolymer+1, target__dna_length__+1):
     print(f'DNA length is {length}')
-    _DNA_ = np.zeros([length * 2, 4 ** (Homopolymer-1), 4])
-    _DNA_ = prob_calculater(_DNA_, last_DNA, Homopolymer)
-    last_DNA = _DNA_
-    print(f'\tSum of probability: {np.sum(_DNA_)}')
+    _dna_ = np.zeros([length * 2, 4 ** (homopolymer-1), 4])
+    _dna_ = prob_calculater(_dna_, last_dna, homopolymer)
+    last_dna = _dna_
+    print(f'\tSum of probability: {np.sum(_dna_)}')
 
     # Calculate Expectation
     expectation_ = 0
-    for binary_length in range(_DNA_.shape[0]):
-        expectation_ += (binary_length + 1) * np.sum(_DNA_[binary_length])
+    for binary_length in range(_dna_.shape[0]):
+        expectation_ += (binary_length + 1) * np.sum(_dna_[binary_length])
     print(f'\tExpectation: {expectation_}')
 
     # Calculate Mapping potential(bits/nt)
