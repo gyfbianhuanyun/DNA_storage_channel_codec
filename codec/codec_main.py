@@ -54,7 +54,7 @@ def codec_processing(binary_data, homopolymer_, dna_length_, gc_upper, gc_lower,
     # Write binary data to file
     write_data2file(binary_decoder, binary_filename, mode='decode')
 
-    # print("\tDecode finished")
+    print("\tDecode finished")
 
     if binary_decoder_list == binary_data:
         print("Codec success")
