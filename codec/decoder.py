@@ -5,12 +5,12 @@ from codec_map import Decode_Map_d2b
 def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b, dna_length=100):
     binary_seq = []
 
-    # Initial state
-    homopolymer_count = 1
-    check_base = None
-
     # Read data from DNA list
     for i in range(0, len(dna_data)):
+        # Initial state
+        homopolymer_count = 1
+        check_base = None
+
         for j in range(0, dna_length):
             if j == len(dna_data[i]):
                 break
@@ -43,8 +43,5 @@ def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b, dna_length=10
                 check_base = dna_data[i][j]
                 homopolymer_count = 1
                 binary_seq.append(present_bits)
-
-        homopolymer_count = 1
-        check_base = None
 
     return binary_seq

@@ -1,5 +1,6 @@
 from codec_map import Encode_Map_b2d
 import math
+import numpy as np
 
 
 # Encoding (satisfies homopolymer constraints)
@@ -73,13 +74,17 @@ def encoder_b2d_homo(binary_data, homopolymer=3, codec_map=Encode_Map_b2d, dna_l
 def encoder_b2d_gc(dna_data, gc_upper=0.5, gc_lower=0.5, dna_length=100):
     gc_content_list = []
     gc_count_list = []
-
+    dna_data_array = np.array(dna_data)
     for i in range(len(dna_data)):
-        _gc_count = 0
         # Count the number of bases 'C' and 'G'
-        for j in range(len(dna_data[i])):
-            if dna_data[i][j] == 'C' or dna_data[i][j] == 'G':
-                _gc_count += 1
+        bases_, count_ = np.unique(dna_data_array[i], return_counts=True)
+
+        if count_[np.where(bases_ == 'C')] and count_[np.where(bases_ == 'G')]:
+            _gc_count = count_[np.where(bases_ == 'C')] + count_[np.where(bases_ == 'G')]
+        elif count_[np.where(bases_ == 'A')] and count_[np.where(bases_ == 'T')]:
+            _gc_count = dna_length - (count_[np.where(bases_ == 'A')] + count_[np.where(bases_ == 'T')])
+        else:
+            raise ValueError("Encoded DNA sequence error, please check binary data")
 
         # Too few "C" and "G" bases
         if (_gc_count / dna_length) < gc_lower:
@@ -111,7 +116,7 @@ def encoder_b2d_gc(dna_data, gc_upper=0.5, gc_lower=0.5, dna_length=100):
         round_ = added_symbol // 2
         reminder_ = added_symbol % 2
         gc_content_list.append(added_symbol)
-        gc_count_list.append(_gc_count)
+        gc_count_list.append(_gc_count[0])
 
         if reminder_ == 0:
             add_bases = add_symbol * round_
