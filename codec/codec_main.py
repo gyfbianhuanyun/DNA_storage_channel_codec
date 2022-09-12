@@ -1,6 +1,6 @@
 from encoder import encoder_b2d_homo, encoder_b2d_gc
 from decoder import decoder_d2b
-from utils import write_data2file, read_dna
+from utils import write_data2file, read_dna, plot_gc_hist
 
 
 def codec_processing(binary_data, opt):
@@ -26,6 +26,11 @@ def codec_processing(binary_data, opt):
     print(f"\tGC content:")
     print(f"\t\tGC count : {gc_count}")
     print(f"\t\tAdded    : {gc_content}")
+
+    # Draw a histogram of the number of DNA bases added
+    if opt.gc_hist:
+        plot_gc_hist(gc_content)
+
     print(f"\t\tNum zero : {len(gc_content)} / {gc_content.count(0)}")
     print(f"\t\tMax added: {max(gc_content)}")
     print(f"\t\tTotal number of bases added: {sum_}")
