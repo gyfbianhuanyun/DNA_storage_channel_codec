@@ -41,7 +41,7 @@ if __name__ == '__main__':
     # Data information
     parser.add_argument("--binary_data_bits", type=int, default=10000000,
                         help="Amount of binary data")
-    parser.add_argument("--data_filename", type=str, default='',
+    parser.add_argument("--data_filename", type=str, default='test_file/plane.ppm',
                         help="Data file name")
 
     # DNA storage channel constraints
@@ -67,9 +67,5 @@ if __name__ == '__main__':
                         help="Whether to compress binary data")
 
     dna_codec_opt = parser.parse_args()
-    dna_codec_opt.dna_length_fixed = 100
-    # file: 'poem.txt', 'lena.jpg', 'plane.ppm'
-    dna_codec_opt.data_filename = 'test_file/plane.ppm'
-    dna_codec_opt.compression = True
 
     main(dna_codec_opt)
