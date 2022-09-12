@@ -13,8 +13,9 @@ def codec_processing(binary_data, opt):
                                              dna_length=opt.dna_length_fixed)
 
     dna_bases_num = len(dna_data) * opt.dna_length_fixed
-    binary_bits = len(binary_data)
+    binary_bits = opt.binary_data_bits
     print("\tHomopolymer:")
+    print(f"\t\tOriginal file: {binary_bits} | compression file: {len(binary_data)}")
     print(f"\t\tMapping potential: {binary_bits/dna_bases_num}(bits/nt)")
 
     dna_data, gc_content, gc_count = encoder_b2d_gc(dna_data, gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower,
@@ -24,8 +25,8 @@ def codec_processing(binary_data, opt):
     sum_ = sum(gc_content)
     expected_gc = sum_ / len(gc_content)
     print(f"\tGC content:")
-    print(f"\t\tGC count : {gc_count}")
-    print(f"\t\tAdded    : {gc_content}")
+    # print(f"\t\tGC count : {gc_count}")
+    # print(f"\t\tAdded    : {gc_content}")
     print(f"\t\tNum zero : {len(gc_content)} / {gc_content.count(0)}")
     print(f"\t\tMax added: {max(gc_content)}")
     print(f"\t\tTotal number of bases added: {sum_}")
