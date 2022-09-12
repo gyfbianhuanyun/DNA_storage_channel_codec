@@ -84,6 +84,9 @@ $$ Mapping\  potential = {Binary\  bits \over DNA\  bases} $$
 ```
 
 ### 4. Check results
+Check that the final decoded result is the same as the input binary sequence before encoding.
+
+If the same, output `Codec success`, otherwise output `Codec failed`.
 
 ## Codec code
 ### Structure
@@ -110,7 +113,7 @@ Python codec_run.py --options information
 Calculate the optimal mapping potential that our method can achieve
 under given conditions (fixed DNA sequence length) and homopolymer constraints
 
-### Arguments
+### Options settings
 ```
 # Data information
 --binary_data_bits: Amount of binary data
