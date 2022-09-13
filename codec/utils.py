@@ -31,7 +31,17 @@ def plot_gc_hist(_data_):
         data_count_list.append(np.sum(data_array == i))
 
     df = pd.DataFrame(data_count_list, columns=['Added symbol'])
-    df.plot(kind='bar')
+
+    ax = df.plot(kind='bar')
+    plt.title('Distribution map of added DNA bases under the GC content constraint')
     plt.xlabel('The number of added DNA bases')
+    plt.xlim(left=-1)
     plt.ylabel('The number of DNA sequence')
-    plt.savefig('GC_histogram.pdf')
+
+    # Add column value (The number of DNA sequence)
+    rects = ax.patches
+    for rect, label in zip(rects, data_count_list):
+        ax.text(rect.get_x() + rect.get_width() / 2, rect.get_height() + max(data_count_list) / 50,
+                label, ha="center", fontsize=8)
+
+    plt.savefig('output_files/GC_histogram.pdf')
