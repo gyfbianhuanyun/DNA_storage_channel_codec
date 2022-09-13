@@ -24,8 +24,6 @@ def codec_processing(binary_data, opt):
     sum_ = sum(gc_content)
     expected_gc = sum_ / len(gc_content)
     print(f"\tGC content:")
-    print(f"\t\tGC count : {gc_count}")
-    print(f"\t\tAdded    : {gc_content}")
 
     # Draw a histogram of the number of DNA bases added
     if opt.gc_hist:
@@ -42,7 +40,7 @@ def codec_processing(binary_data, opt):
 
     # Write DNA data to file
     write_data2file(dna_data, opt.encode_dna_filename)
-    # print("\tEncode finished")
+    print("\tEncode finished")
 
     # Decoder
     print("Decode start")

@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 
 
@@ -24,10 +25,13 @@ def write_data2file(data, file_path, mode='encode'):
 
 # Draw a histogram of the number of DNA bases added under the constraint of GC content
 def plot_gc_hist(_data_):
-    df = pd.DataFrame(_data_, columns=['Add symbol'])
+    data_array = np.array(_data_)
+    data_count_list = []
+    for i in range(data_array.max() + 1):
+        data_count_list.append(np.sum(data_array == i))
 
+    df = pd.DataFrame(data_count_list, columns=['Added symbol'])
     df.plot(kind='bar')
-    plt.xlabel('DNA sequence index')
-    plt.ylabel('The number of added DNA bases')
-    plt.xticks([])
-    plt.savefig('GC_histogram.jpg')
+    plt.xlabel('The number of added DNA bases')
+    plt.ylabel('The number of DNA sequence')
+    plt.savefig('GC_histogram.pdf')
