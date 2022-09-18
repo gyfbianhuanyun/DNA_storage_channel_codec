@@ -17,7 +17,7 @@ def main(opt):
             binary_list = np.random.choice(binary_symbol, binary_bits, p=[0.5, 0.5]).tolist()
 
         elif opt.data_filename:
-            binary_list = read_data(opt.data_filename)
+            binary_list = read_data(opt.data_filename, opt.data_read_rb)
             opt.binary_data_bits = len(binary_list)
 
             # Compress data
@@ -26,7 +26,7 @@ def main(opt):
                     with gzip.open(f'{opt.data_filename}.gz', 'wb') as f_out:
                         shutil.copyfileobj(f_in, f_out)
                 opt.data_filename += '.gz'
-                binary_list = read_data(opt.data_filename)
+                binary_list = read_data(opt.data_filename, opt.data_read_rb)
 
         else:
             raise ValueError("Please check binary data")
@@ -43,6 +43,8 @@ if __name__ == '__main__':
                         help="Amount of binary data")
     parser.add_argument("--data_filename", type=str, default='test_file/plane.ppm',
                         help="Data file name")
+    parser.add_argument("--data_read_rb", type=bool, default=False,
+                        help="Whether to use 'rb' mode to read data")
 
     # DNA storage channel constraints
     parser.add_argument("--homopolymer_cons", type=int, default=3,
