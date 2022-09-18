@@ -24,20 +24,8 @@ def read_pic(file_path):
     return img_list
 
 
-# read binary data from gzip file
-def read_gz(file_path):
-    with open(file_path, 'rb') as f:
-        byte_content = f.read()
-
-    zip_ = "".join([format(binary, '#010b')[2:] for binary in byte_content])
-    zip_list = []
-    zip_list[:0] = zip_
-
-    return zip_list
-
-
-# read data from the file using rb mode
-def read_rb(file_path):
+# read binary data from file or gzip file
+def read_gz_rb(file_path):
     with open(file_path, 'rb') as f:
         content = f.read()
 
@@ -63,10 +51,7 @@ def read_string(file_path):
 # read data from file according to the path
 def read_data(file_path, read_mode_rb):
     if read_mode_rb:
-        if file_path.endswith('.gz'):
-            data_list = read_gz(file_path)
-        else:
-            data_list = read_rb(file_path)
+        data_list = read_gz_rb(file_path)
 
     else:
         if file_path.endswith(('.jpg', 'ppm', 'png', 'jpeg')):
@@ -74,7 +59,7 @@ def read_data(file_path, read_mode_rb):
         elif file_path.endswith('.txt'):
             data_list = read_string(file_path)
         elif file_path.endswith('.gz'):
-            data_list = read_gz(file_path)
+            data_list = read_gz_rb(file_path)
         else:
             raise ValueError("Data load error, please check data file path or data file type"
                              "(jpg/ppm/txt/gz)")
