@@ -31,8 +31,12 @@ For image data:
 For text data:
 
     We get the ASCII value of the letter and convert it to binary data
+
+Or get the binary data directly from the file (optional):
+
+    We use 'rb' mode to read the binary data of the file directly
  
-Then we compress the data using gzip (optional).
+Then we compress the data (lossless) using gzip (optional).
 
 In the end, we get a list containing only binary data
 
@@ -118,6 +122,7 @@ under given conditions (fixed DNA sequence length) and homopolymer constraints
 # Data information
 --binary_data_bits: Amount of binary data
 --data_filename: Data file name
+--data_read_rb: Use 'rb' mode to read binary data from file directly
 
 # DNA storage channel constraints
 --homopolymer_cons: The DNA storage channel homopolymer constraints
