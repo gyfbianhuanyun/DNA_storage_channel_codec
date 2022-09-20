@@ -27,13 +27,16 @@ Binary to DNA sequence codec
 ### 1. Read data
 Our method can process multiple types of images(jpg, ppm) or text(txt) data.
 
-For image data:
+* For image data:
+    
     We get pixel value and convert to binary data
  
-For text data:
+* For text data:
+
     We get the ASCII value of the letter and convert it to binary data
 
-Or get the binary data directly from the file (optional):
+* Or get the binary data directly from the file (optional):
+    
     We use 'rb' mode to read the binary data of the file directly
  
 Then we compress the data (lossless) using gzip (optional).
@@ -44,14 +47,16 @@ In the end, we get a list containing only binary data
 
 #### A. Homopolymer constraint encoding
 
-* Step 1: Encode binary data into DNA base symbols according to ACGT diagrams
-        ACGT diagrams {A: 00, C: 01, G: 10, T: 11}
+* Step 1: Encode binary data into DNA base symbols according to ACGT diagrams {A: 00, C: 01, G: 10, T: 11}
+
 * Step 2: When 3 identical bases occur, read the next bit
         
-        a. if the last base is A or T, then the next bit
+    a. if the last base is A or T, then the next bit
             0: C, 1: G
-        b. otherwise the last base is C or G, then the next 1 digit
+    
+    b. otherwise the last base is C or G, then the next 1 digit
             0: A, 1: T
+
 * Step 3: Read the next 2 bits and repeat step 1
 
 For example:
