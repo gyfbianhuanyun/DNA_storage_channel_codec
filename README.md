@@ -9,31 +9,31 @@ git@github.com:gyfbianhuanyun/DNA_storage_channel_codec.git
 
 ## Codec Processing
 Binary to DNA sequence codec
-```
+
 1. Read data from file or random generate binary data
     Compress data or not
 2. Encoding
+
     A. Homopolymer constraint encoding
+
     B. GC content constraint encoding
+
     C. Calculate mapping potential
 3. Decoding
 4. Check encoding result
     Whether the decoded binary data is equal to the original binary data
-```
+
 
 ### 1. Read data
 Our method can process multiple types of images(jpg, ppm) or text(txt) data.
 
 For image data:
-    
     We get pixel value and convert to binary data
  
 For text data:
-
     We get the ASCII value of the letter and convert it to binary data
 
 Or get the binary data directly from the file (optional):
-
     We use 'rb' mode to read the binary data of the file directly
  
 Then we compress the data (lossless) using gzip (optional).
@@ -43,16 +43,17 @@ In the end, we get a list containing only binary data
 ### 2. Encoding
 
 #### A. Homopolymer constraint encoding
-```
-Step 1: Encode binary data into DNA base symbols according to ACGT diagrams
+
+* Step 1: Encode binary data into DNA base symbols according to ACGT diagrams
         ACGT diagrams {A: 00, C: 01, G: 10, T: 11}
-Step 2: When 3 identical bases occur, read the next byte
-        if the last base is A or T, then the next bit
+* Step 2: When 3 identical bases occur, read the next bit
+        
+        a. if the last base is A or T, then the next bit
             0: C, 1: G
-        otherwise the last base is C or G, then the next 1 digit
+        b. otherwise the last base is C or G, then the next 1 digit
             0: A, 1: T
-Step 3: Read the next 2 bits and repeat step 1
-```
+* Step 3: Read the next 2 bits and repeat step 1
+
 For example:
 ```
 If the homopolymer constraint is 3
@@ -66,10 +67,10 @@ Step 3: DNA:    C C CA G G G
 DNA    data:    CCCAGGG  
 ```
 #### B. GC content constraint encoding
-```
+
 Calculate the proportion of GC bases and add corresponding
 bases to meet the constraint
-```
+
 For example:
 ```
 If GC content constraint is 40% ~ 60%.
@@ -82,10 +83,9 @@ Added DNA  :    CCCAGGGATA
 $$ Mapping\  potential = {Binary\  bits \over DNA\  bases} $$
 
 ### 3. Decoding
-```
 1. Check if there are 3 identical bases, and then decode the sequence according to the direction of the adjacent bases
 2. Only select fixed-length DNA bases to decode
-```
+
 
 ### 4. Check results
 Check that the final decoded result is the same as the input binary sequence before encoding.
