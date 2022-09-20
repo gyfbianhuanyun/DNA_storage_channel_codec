@@ -13,8 +13,14 @@ def codec_processing(binary_data, opt):
                                              dna_length=opt.dna_length_fixed)
 
     dna_bases_num = len(dna_data) * opt.dna_length_fixed
-    binary_bits = len(binary_data)
+    binary_bits = opt.binary_data_bits
     print("\tHomopolymer:")
+
+    if opt.compression:
+        print(f"\t\tOriginal file: {binary_bits} | compression file: {len(binary_data)}")
+    else:
+        print(f"\t\tOriginal file: {binary_bits} (without gzip compression)")
+
     print(f"\t\tMapping potential: {binary_bits/dna_bases_num}(bits/nt)")
 
     dna_data, gc_content, gc_count = encoder_b2d_gc(dna_data, gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower,
