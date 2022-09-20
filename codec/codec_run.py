@@ -65,6 +65,8 @@ if __name__ == '__main__':
     # Other codec processing options
     parser.add_argument("--rounds", type=int, default=1,
                         help="Binary to DNA sequence encoding and decoding repeated rounds")
+    parser.add_argument("--gc_hist", type=bool, default=False,
+                        help="Draw a histogram of the number of DNA bases added under the constraint of GC content")
     parser.add_argument("--compression", type=bool, default=False,
                         help="Whether to compress binary data")
 
