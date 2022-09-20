@@ -34,6 +34,8 @@ if __name__ == '__main__':
                         help="Decoded binary sequence filename")
     parser.add_argument("--rounds", type=int, default=1,
                         help="Binary to DNA sequence encoding and decoding repeated rounds")
+    parser.add_argument("--gc_hist", type=bool, default=False,
+                        help="Draw a histogram of the number of DNA bases added under the constraint of GC content")
 
     dna_codec_opt = parser.parse_args()
     main(dna_codec_opt)
