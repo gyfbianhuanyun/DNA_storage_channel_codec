@@ -70,7 +70,7 @@ if __name__ == '__main__':
     parser.add_argument("--compression", type=bool, default=False,
                         help="Whether to compress binary data")
     parser.add_argument("--random_base_seq", type=bool, default=False,
-                        help="Add random base sequence to add to avoid excessive GC imbalance issues")
+                        help="Add random binary sequence to avoid excessive GC imbalance issues")
 
     dna_codec_opt = parser.parse_args()
 

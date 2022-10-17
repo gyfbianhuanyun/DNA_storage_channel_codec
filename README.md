@@ -142,4 +142,6 @@ under given conditions (fixed DNA sequence length) and homopolymer constraints
 # Other codec processing options
 --rounds: Binary to DNA sequence encoding and decoding repeated rounds
 --compression: Whether to compress binary data
+--gc_hist: Draw a histogram of the number of DNA bases added under the constraint of GC content
+--random_base_seq: Add random binary sequence to avoid excessive GC imbalance issues
 ```
