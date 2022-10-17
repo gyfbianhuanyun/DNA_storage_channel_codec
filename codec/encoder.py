@@ -79,16 +79,27 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
             for i in range(len(binary_base_list)):
                 binary_base = binary_base_list[i]
                 binary_data_addition = [''] * len(binary_base)
-                for j in range(len(binary_base)):
+                for j in range(min([len(binary_base), len(binary_data)])):
                     if binary_base[j] == binary_data[j]:
                         binary_data_addition[j] = '0'
                     else:
                         binary_data_addition[j] = '1'
 
-                dna_data_one_seq, flag, _ = \
+                dna_data_one_seq, flag, remain_seq = \
                     homo_encoding(homopolymer, binary_data_addition, dna_length, codec_map,
                                   random_base_seq=True, check_base=first_base_list[i + 1])
                 first_base = first_base_list[i + 1]
+
+                # The sequence length is not enough fixed length
+                if remain_seq:
+                    compare_added_symbol_list.append(float('inf'))
+                    add_symbol_list.append(None)
+                    last_symbol_list.append(None)
+                    gc_count_list.append(None)
+                    flag_list.append(None)
+                    dna_seq_list.append(None)
+                    continue
+
                 dna_data_one_seq[0].insert(0, first_base)
 
                 dna_data_one_seq_array = np.array(dna_data_one_seq)
@@ -234,20 +245,20 @@ def calculate_added_symbols(dna_data, gc_upper, gc_lower, dna_length):
         added_symbol = math.ceil(abs((dna_length * gc_lower - _gc_count) / (1 - gc_lower)))
         if dna_data[-1] == 'C':
             add_symbol = 'GC'
-            last_symbol = 'C'
+            last_symbol = 'G'
         else:
             add_symbol = 'CG'
-            last_symbol = 'G'
+            last_symbol = 'C'
 
     # Too many "C" and "G" bases
     elif (_gc_count / dna_length) > gc_upper:
         added_symbol = int(abs((dna_length * gc_upper - _gc_count) / (1 - gc_upper)))
         if dna_data[-1] == 'A':
             add_symbol = 'TA'
-            last_symbol = 'A'
+            last_symbol = 'T'
         else:
             add_symbol = 'AT'
-            last_symbol = 'T'
+            last_symbol = 'A'
 
     # "C" and "G" bases satisfy constraints
     else:

@@ -54,6 +54,10 @@ def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b, dna_length=10
                 homopolymer_count = 1
                 _binary_seq_.append(present_bits)
 
+        binary_decoder = ''.join(_binary_seq_)
+        _binary_seq_ = []
+        _binary_seq_[:0] = binary_decoder
+
         if random_base_seq:
             if dna_data[i][0] != 'A':
                 first_base_list = ['A', 'C', 'G', 'T']

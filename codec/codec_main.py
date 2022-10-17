@@ -78,3 +78,8 @@ def codec_processing(binary_data, opt):
         print("Codec success")
     else:
         print("Codec failed")
+
+    print(f'Data information:\n'
+          f'\tOriginal binary sequence (bits): {len(binary_data)}\n'
+          f'\tEncoded binary sequence  (bits): {len(binary_data_encoded)}\n'
+          f'\tDecoded binary sequence  (bits): {len(binary_decoder_list)}')
