@@ -1,8 +1,5 @@
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
-from PIL import Image
-
 
 # read data from file
 from PIL import Image
