@@ -26,11 +26,13 @@ def codec_processing(binary_data, opt):
     print(f"\tGC content:")
     if opt.random_base_seq:
         binary_data_encoded, dna_data, gc_content, gc_count = \
-            encoder_b2d_random_base(binary_data, homopolymer=opt.homopolymer_cons, dna_length=opt.dna_length_fixed)
+            encoder_b2d_random_base(binary_data, homopolymer=opt.homopolymer_cons, dna_length=opt.dna_length_fixed,
+                                    gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower)
 
     else:
-        dna_data, gc_content, gc_count = encoder_b2d_gc(dna_data, gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower,
-                                                        dna_length=opt.dna_length_fixed)
+        dna_data, gc_content, gc_count =\
+            encoder_b2d_gc(dna_data, gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower,
+                           dna_length=opt.dna_length_fixed)
 
     # Calculate the expected number of bases added when GC constraints are met
     sum_ = sum(gc_content)
@@ -61,7 +63,8 @@ def codec_processing(binary_data, opt):
     print("\tRead DNA data")
 
     # Decoding
-    binary_decoder = decoder_d2b(dna_data_, homopolymer=opt.homopolymer_cons, dna_length=opt.dna_length_fixed)
+    binary_decoder = decoder_d2b(dna_data_, homopolymer=opt.homopolymer_cons, dna_length=opt.dna_length_fixed,
+                                 random_base_seq=opt.random_base_seq)
     binary_decoder = ''.join(binary_decoder)
     binary_decoder_list = []
     binary_decoder_list[:0] = binary_decoder

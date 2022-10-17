@@ -20,7 +20,7 @@ def encoder_b2d_homo(binary_data, homopolymer=3, codec_map=Encode_Map_b2d, dna_l
 
 # Encoding (satisfies GC content constraints)
 # Calculate the number of bases to add to meet GC content constraints
-def encoder_b2d_gc(dna_data, gc_upper=0.5, gc_lower=0.5, dna_length=100):
+def encoder_b2d_gc(dna_data, gc_upper=0.4, gc_lower=0.6, dna_length=100):
     gc_content_list = []
     gc_count_list = []
     dna_data_array = np.array(dna_data)
@@ -47,7 +47,7 @@ def encoder_b2d_gc(dna_data, gc_upper=0.5, gc_lower=0.5, dna_length=100):
 
 # Encoding (Add random binary sequence to avoid excessive GC imbalance)
 def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d, dna_length=100,
-                            gc_upper=0.5, gc_lower=0.5, added_length_limit=10):
+                            gc_upper=0.4, gc_lower=0.6, added_length_limit=10):
     binary_base_list = gen_binary_seq(dna_length, seed=555, times=2)
     first_base_list = ['A', 'C', 'G', 'T']
     gc_content_list = []
@@ -63,10 +63,10 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
         if end_timing:
             break
 
-        dna_data_one_seq.insert(0, first_base_list[0])
+        dna_data_one_seq[0].insert(0, first_base_list[0])
         dna_data_one_seq_array = np.array(dna_data_one_seq)
         added_num_symbols, add_symbol, last_symbol, gc_count = \
-            calculate_added_symbols(dna_data_one_seq_array, gc_upper, gc_lower, dna_length + 1)
+            calculate_added_symbols(dna_data_one_seq_array[0], gc_upper, gc_lower, dna_length + 1)
 
         if added_num_symbols > added_length_limit:
             compare_added_symbol_list = [added_num_symbols]
@@ -89,11 +89,11 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
                     homo_encoding(homopolymer, binary_data_addition, dna_length, codec_map,
                                   random_base_seq=True, check_base=first_base_list[i + 1])
                 first_base = first_base_list[i + 1]
-                dna_data_one_seq.insert(0, first_base)
+                dna_data_one_seq[0].insert(0, first_base)
 
                 dna_data_one_seq_array = np.array(dna_data_one_seq)
                 added_num_symbols, add_symbol, last_symbol, gc_count = \
-                    calculate_added_symbols(dna_data_one_seq_array, gc_upper, gc_lower, dna_length + 1)
+                    calculate_added_symbols(dna_data_one_seq_array[0], gc_upper, gc_lower, dna_length + 1)
                 compare_added_symbol_list.append(added_num_symbols)
                 add_symbol_list.append(add_symbol)
                 last_symbol_list.append(last_symbol)
@@ -120,12 +120,12 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
 
         if reminder_ == 0:
             add_bases = add_symbol * round_
-            dna_data_one_seq.append(add_bases)
+            dna_data_one_seq[0].append(add_bases)
         else:
             add_bases = add_symbol * round_ + last_symbol
-            dna_data_one_seq.append(add_bases)
+            dna_data_one_seq[0].append(add_bases)
 
-        dna_data.append(dna_data_one_seq)
+        dna_data.append(dna_data_one_seq[0])
         binary_original_data.extend(binary_encoded)
 
     return binary_original_data, dna_data, gc_content_list, gc_count_num_list
