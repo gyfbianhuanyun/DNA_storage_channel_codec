@@ -1,4 +1,4 @@
-from encoder import encoder_b2d_homo, encoder_b2d_gc
+from encoder import encoder_b2d_homo, encoder_b2d_gc, encoder_b2d_random_base
 from decoder import decoder_d2b
 from utils import write_data2file, read_dna, plot_gc_hist
 
@@ -9,27 +9,32 @@ def codec_processing(binary_data, opt):
     print("\tRead binary data")
 
     # Encoding (DNA data: list)
-    binary_data, dna_data = encoder_b2d_homo(binary_data, homopolymer=opt.homopolymer_cons,
-                                             dna_length=opt.dna_length_fixed)
+    binary_data_encoded, dna_data = encoder_b2d_homo(binary_data, homopolymer=opt.homopolymer_cons,
+                                                     dna_length=opt.dna_length_fixed)
 
     dna_bases_num = len(dna_data) * opt.dna_length_fixed
     binary_bits = opt.binary_data_bits
     print("\tHomopolymer:")
 
     if opt.compression:
-        print(f"\t\tOriginal file: {binary_bits} | compression file: {len(binary_data)}")
+        print(f"\t\tOriginal file: {binary_bits} | compression file: {len(binary_data_encoded)}")
     else:
         print(f"\t\tOriginal file: {binary_bits} (without gzip compression)")
 
     print(f"\t\tMapping potential: {binary_bits/dna_bases_num}(bits/nt)")
 
-    dna_data, gc_content, gc_count = encoder_b2d_gc(dna_data, gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower,
-                                                    dna_length=opt.dna_length_fixed)
+    print(f"\tGC content:")
+    if opt.random_base_seq:
+        binary_data_encoded, dna_data, gc_content, gc_count = \
+            encoder_b2d_random_base(binary_data, homopolymer=opt.homopolymer_cons, dna_length=opt.dna_length_fixed)
+
+    else:
+        dna_data, gc_content, gc_count = encoder_b2d_gc(dna_data, gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower,
+                                                        dna_length=opt.dna_length_fixed)
 
     # Calculate the expected number of bases added when GC constraints are met
     sum_ = sum(gc_content)
     expected_gc = sum_ / len(gc_content)
-    print(f"\tGC content:")
 
     # Draw a histogram of the number of DNA bases added
     if opt.gc_hist:
@@ -66,7 +71,7 @@ def codec_processing(binary_data, opt):
 
     print("\tDecode finished")
 
-    if binary_decoder_list == binary_data:
+    if binary_decoder_list == binary_data_encoded:
         print("Codec success")
     else:
         print("Codec failed")

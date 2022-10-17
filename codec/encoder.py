@@ -1,4 +1,5 @@
 from codec_map import Encode_Map_b2d
+from utils import gen_binary_seq
 import math
 import numpy as np
 
@@ -44,14 +45,100 @@ def encoder_b2d_gc(dna_data, gc_upper=0.5, gc_lower=0.5, dna_length=100):
     return dna_data, gc_content_list, gc_count_list
 
 
+# Encoding (Add random binary sequence to avoid excessive GC imbalance)
+def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d, dna_length=100,
+                            gc_upper=0.5, gc_lower=0.5, added_length_limit=10):
+    binary_base_list = gen_binary_seq(dna_length, seed=555, times=2)
+    first_base_list = ['A', 'C', 'G', 'T']
+    gc_content_list = []
+    gc_count_num_list = []
+    dna_data = []
+    binary_original_data = []
+
+    while binary_data:
+        dna_data_one_seq, flag, end_timing = \
+            homo_encoding(homopolymer, binary_data, dna_length, codec_map,
+                          random_base_seq=True, check_base=first_base_list[0])
+
+        if end_timing:
+            break
+
+        dna_data_one_seq.insert(0, first_base_list[0])
+        dna_data_one_seq_array = np.array(dna_data_one_seq)
+        added_num_symbols, add_symbol, last_symbol, gc_count = \
+            calculate_added_symbols(dna_data_one_seq_array, gc_upper, gc_lower, dna_length + 1)
+
+        if added_num_symbols > added_length_limit:
+            compare_added_symbol_list = [added_num_symbols]
+            add_symbol_list = [add_symbol]
+            last_symbol_list = [last_symbol]
+            gc_count_list = [gc_count]
+            flag_list = [flag]
+            dna_seq_list = [dna_data_one_seq]
+
+            for i in range(len(binary_base_list)):
+                binary_base = binary_base_list[i]
+                binary_data_addition = [''] * len(binary_base)
+                for j in range(len(binary_base)):
+                    if binary_base[j] == binary_data[j]:
+                        binary_data_addition[j] = '0'
+                    else:
+                        binary_data_addition[j] = '1'
+
+                dna_data_one_seq, flag, _ = \
+                    homo_encoding(homopolymer, binary_data_addition, dna_length, codec_map,
+                                  random_base_seq=True, check_base=first_base_list[i + 1])
+                first_base = first_base_list[i + 1]
+                dna_data_one_seq.insert(0, first_base)
+
+                dna_data_one_seq_array = np.array(dna_data_one_seq)
+                added_num_symbols, add_symbol, last_symbol, gc_count = \
+                    calculate_added_symbols(dna_data_one_seq_array, gc_upper, gc_lower, dna_length + 1)
+                compare_added_symbol_list.append(added_num_symbols)
+                add_symbol_list.append(add_symbol)
+                last_symbol_list.append(last_symbol)
+                gc_count_list.append(gc_count)
+                flag_list.append(flag)
+                dna_seq_list.append(dna_data_one_seq)
+
+            index_min_ = compare_added_symbol_list.index(min(compare_added_symbol_list))
+            added_num_symbols = compare_added_symbol_list[index_min_]
+            add_symbol = add_symbol_list[index_min_]
+            last_symbol = last_symbol_list[index_min_]
+            gc_count = gc_count_list[index_min_]
+            dna_data_one_seq = dna_seq_list[index_min_]
+            flag = flag_list[index_min_]
+
+        binary_encoded = binary_data[:flag]
+        binary_data = binary_data[flag:]
+
+        # Add bases to meet GC content constraint
+        round_ = added_num_symbols // 2
+        reminder_ = added_num_symbols % 2
+        gc_content_list.append(added_num_symbols)
+        gc_count_num_list.append(gc_count[0])
+
+        if reminder_ == 0:
+            add_bases = add_symbol * round_
+            dna_data_one_seq.append(add_bases)
+        else:
+            add_bases = add_symbol * round_ + last_symbol
+            dna_data_one_seq.append(add_bases)
+
+        dna_data.append(dna_data_one_seq)
+        binary_original_data.extend(binary_encoded)
+
+    return binary_original_data, dna_data, gc_content_list, gc_count_num_list
+
+
 # Homopolymer encoding
-def homo_encoding(homopolymer_constraint, binary_data, dna_length, codecmap=Encode_Map_b2d):
+def homo_encoding(homopolymer_constraint, binary_data, dna_length, codecmap=Encode_Map_b2d,
+                  random_base_seq=False, check_base=None):
     dna_data = []
     dna_seq = []
 
     # Initial state
     homopolymer_count = 1
-    check_base = None
     binary_symbol = ''
     flag = 0
     # Read data from binary list
@@ -102,6 +189,8 @@ def homo_encoding(homopolymer_constraint, binary_data, dna_length, codecmap=Enco
             check_base = None
             dna_seq = []
             flag = i + 1
+            if random_base_seq:
+                break
 
     return dna_data, flag, dna_seq
 

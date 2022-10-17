@@ -117,3 +117,12 @@ def tobinary(string):
 # Binary to string
 def tostring(binarystring):
     return "".join([chr(int(binarystring[i:i+8], 2)) for i in range(0, len(binarystring), 8)])
+
+
+# Generate random binary sequence for base sequence
+def gen_binary_seq(dna_length, seed=555, times=2):
+    binary_symbol = ['0', '1']
+    binary_bits = int(dna_length * times)
+    np.random.seed(seed)
+    binary_base_list = np.random.choice(binary_symbol, (3, binary_bits), p=[0.5, 0.5]).tolist()
+    return binary_base_list
