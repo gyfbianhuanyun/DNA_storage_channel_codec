@@ -79,10 +79,32 @@ def encoder_b2d_gc(dna_data, gc_upper=0.5, gc_lower=0.5, dna_length=100):
         # Count the number of bases 'C' and 'G'
         bases_, count_ = np.unique(dna_data_array[i], return_counts=True)
 
-        if count_[np.where(bases_ == 'C')] and count_[np.where(bases_ == 'G')]:
-            _gc_count = count_[np.where(bases_ == 'C')] + count_[np.where(bases_ == 'G')]
-        elif count_[np.where(bases_ == 'A')] and count_[np.where(bases_ == 'T')]:
-            _gc_count = dna_length - (count_[np.where(bases_ == 'A')] + count_[np.where(bases_ == 'T')])
+        if count_[np.where(bases_ == 'C')] or count_[np.where(bases_ == 'G')]:
+            if count_[np.where(bases_ == 'C')]:
+                _gc_count_c = count_[np.where(bases_ == 'C')]
+            else:
+                _gc_count_c = 0
+
+            if count_[np.where(bases_ == 'G')]:
+                _gc_count_g = count_[np.where(bases_ == 'G')]
+            else:
+                _gc_count_g = 0
+
+            _gc_count = _gc_count_c + _gc_count_g
+
+        elif count_[np.where(bases_ == 'A')] or count_[np.where(bases_ == 'T')]:
+            if count_[np.where(bases_ == 'A')]:
+                _gc_count_a = count_[np.where(bases_ == 'A')]
+            else:
+                _gc_count_a = 0
+
+            if count_[np.where(bases_ == 'T')]:
+                _gc_count_t = count_[np.where(bases_ == 'T')]
+            else:
+                _gc_count_t = 0
+
+            _gc_count = dna_length - (_gc_count_a + _gc_count_t)
+
         else:
             raise ValueError("Encoded DNA sequence error, please check binary data")
 
