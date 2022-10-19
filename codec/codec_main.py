@@ -21,7 +21,7 @@ def codec_processing(binary_data, opt):
     else:
         print(f"\t\tOriginal file: {binary_bits} (without gzip compression)")
 
-    print(f"\t\tMapping potential: {binary_bits/dna_bases_num}(bits/nt)")
+    print(f"\t\tMapping potential: {len(binary_data_encoded)/dna_bases_num}(bits/nt)")
 
     print(f"\tGC content:")
     if opt.random_base_seq:
@@ -30,7 +30,7 @@ def codec_processing(binary_data, opt):
                                     gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower)
 
     else:
-        dna_data, gc_content, gc_count =\
+        dna_data, gc_content, gc_count = \
             encoder_b2d_gc(dna_data, gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower,
                            dna_length=opt.dna_length_fixed)
 
@@ -48,8 +48,12 @@ def codec_processing(binary_data, opt):
     print(f"\t\tExpected value: {expected_gc}")
 
     dna_bases_num += sum_
+    # Random binary sequence case: add the first base in each DNA sequence
+    if opt.random_base_seq:
+        dna_bases_num += len(gc_content)
+
     print(f"\tEncoding results:")
-    print(f"\t\tMapping potential: {binary_bits/dna_bases_num}(bits/nt)")
+    print(f"\t\tMapping potential: {len(binary_data_encoded)/dna_bases_num}(bits/nt)")
 
     # Write DNA data to file
     write_data2file(dna_data, opt.encode_dna_filename)
@@ -81,5 +85,5 @@ def codec_processing(binary_data, opt):
 
     print(f'Data information:\n'
           f'\tOriginal binary sequence (bits): {len(binary_data)}\n'
-          f'\tEncoded binary sequence  (bits): {len(binary_data_encoded)}\n'
-          f'\tDecoded binary sequence  (bits): {len(binary_decoder_list)}')
+          f'\tEncoded  binary sequence (bits): {len(binary_data_encoded)}\n'
+          f'\tDecoded  binary sequence (bits): {len(binary_decoder_list)}')

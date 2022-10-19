@@ -92,19 +92,18 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
             # For the other three cases
             for i in range(len(binary_base_list)):
                 binary_base = binary_base_list[i]
-                binary_data_addition = [''] * len(binary_base)
+                binary_data_addition = np.array([''] * len(binary_base))
 
                 # Add the random binary sequence to the original sequence
-                for j in range(min([len(binary_base), len(binary_data)])):
-                    if binary_base[j] == binary_data[j]:
-                        binary_data_addition[j] = '0'
-                    else:
-                        binary_data_addition[j] = '1'
+                binary_data_addition[binary_base == binary_data[:len(binary_base)]] = '0'
+                binary_data_addition[binary_base != binary_data[:len(binary_base)]] = '1'
+                binary_data_addition.tolist()
 
                 # Get a fixed-length DNA sequences and end-of-binary sequence encoding flag
                 dna_data_one_seq, flag, remain_seq = \
                     homo_encoding(homopolymer, binary_data_addition, dna_length, codec_map,
                                   random_base_seq=True, check_base=first_base_list[i + 1])
+
                 # The base symbol for the case
                 first_base = first_base_list[i + 1]
 
