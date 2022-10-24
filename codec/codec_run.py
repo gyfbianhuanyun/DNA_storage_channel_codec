@@ -7,6 +7,17 @@ from codec_main import codec_processing
 from utils import read_data
 
 
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1', 'True'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0', 'False'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+
 def main(opt):
     for i in range(opt.rounds):
         print(f'The {i + 1} rounds:')
@@ -43,7 +54,7 @@ if __name__ == '__main__':
                         help="Amount of binary data")
     parser.add_argument("--data_filename", type=str, default='test_file/plane.ppm',
                         help="Data file name")
-    parser.add_argument("--data_read_rb", type=bool, default=False,
+    parser.add_argument("--data_read_rb", type=str2bool, default=False,
                         help="Whether to use 'rb' mode to read data")
 
     # DNA storage channel constraints
@@ -65,11 +76,11 @@ if __name__ == '__main__':
     # Other codec processing options
     parser.add_argument("--rounds", type=int, default=1,
                         help="Binary to DNA sequence encoding and decoding repeated rounds")
-    parser.add_argument("--gc_hist", type=bool, default=False,
+    parser.add_argument("--gc_hist", type=str2bool, default=False,
                         help="Draw a histogram of the number of DNA bases added under the constraint of GC content")
-    parser.add_argument("--compression", type=bool, default=False,
+    parser.add_argument("--compression", type=str2bool, default=False,
                         help="Whether to compress binary data")
-    parser.add_argument("--random_base_seq", type=bool, default=False,
+    parser.add_argument("--random_base_seq", type=str2bool, default=False,
                         help="Add random binary sequence to avoid excessive GC imbalance issues")
 
     dna_codec_opt = parser.parse_args()
