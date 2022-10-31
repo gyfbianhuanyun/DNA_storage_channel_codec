@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import time
 
 # read data from file
 from PIL import Image
@@ -117,9 +118,18 @@ def tostring(binarystring):
 
 
 # Generate random binary sequence for base sequence
-def gen_binary_seq(dna_length, seed=555, times=2):
+def gen_binary_seq(dna_length, seed, times=2):
     binary_symbol = ['0', '1']
     binary_bits = int(dna_length * times)
     np.random.seed(seed)
-    binary_base_list = np.random.choice(binary_symbol, (3, binary_bits), p=[0.5, 0.5]).tolist()
+    binary_base_list = np.random.choice(binary_symbol, (4, binary_bits), p=[0.5, 0.5])
     return binary_base_list
+
+
+# Print running progress
+def running_progress(all_data, encoded_data, start_time):
+    check_time = time.time()
+    percent = format(encoded_data / all_data * 100, '.2f')
+    cost_time = format(check_time - start_time, '.2f')
+    estimated_time = format(100.0 / float(percent) * float(cost_time), '.2f')
+    print(f'\t\t{percent}%, time:{cost_time}s, estimated time:{estimated_time}s', end='\r')

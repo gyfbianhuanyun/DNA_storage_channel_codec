@@ -1,10 +1,10 @@
-from codec_map import Decode_Map_d2b
+from codec_map import Decode_Map_d2b, first_base_list
 from utils import gen_binary_seq
 
 
 # Get binary sequence based on DNA sequence
 def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b, dna_length=100,
-                random_base_seq=False):
+                random_base_seq=False, random_seed=555):
     binary_seq = []
 
     # Read data from DNA list
@@ -59,17 +59,15 @@ def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b, dna_length=10
         _binary_seq_[:0] = binary_decoder
 
         if random_base_seq:
-            if dna_data[i][0] != 'A':
-                first_base_list = ['A', 'C', 'G', 'T']
-                index_ = first_base_list.index(dna_data[i][0])
-                binary_base_list = gen_binary_seq(dna_length, seed=555, times=2)
-                binary_base = binary_base_list[index_ - 1]
+            index_ = first_base_list.index(dna_data[i][0])
+            binary_base_list = gen_binary_seq(dna_length, seed=random_seed, times=2)
+            binary_base = binary_base_list[index_]
 
-                for l in range(len(_binary_seq_)):
-                    if binary_base[l] == _binary_seq_[l]:
-                        _binary_seq_[l] = '0'
-                    else:
-                        _binary_seq_[l] = '1'
+            for l in range(len(_binary_seq_)):
+                if binary_base[l] == _binary_seq_[l]:
+                    _binary_seq_[l] = '0'
+                else:
+                    _binary_seq_[l] = '1'
 
         binary_seq.extend(_binary_seq_)
 

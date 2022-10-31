@@ -82,6 +82,8 @@ if __name__ == '__main__':
                         help="Whether to compress binary data")
     parser.add_argument("--random_base_seq", type=str2bool, default=False,
                         help="Add random binary sequence to avoid excessive GC imbalance issues")
+    parser.add_argument("--random_seed", type=int, default=222,
+                        help="The random seed to use when generating random binary sequences")
 
     dna_codec_opt = parser.parse_args()
 

@@ -27,7 +27,8 @@ def codec_processing(binary_data, opt):
     if opt.random_base_seq:
         binary_data_encoded, dna_data, gc_content, gc_count = \
             encoder_b2d_random_base(binary_data, homopolymer=opt.homopolymer_cons, dna_length=opt.dna_length_fixed,
-                                    gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower)
+                                    gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower,
+                                    random_seed=opt.random_seed)
 
     else:
         dna_data, gc_content, gc_count = \
@@ -68,7 +69,7 @@ def codec_processing(binary_data, opt):
 
     # Decoding
     binary_decoder = decoder_d2b(dna_data_, homopolymer=opt.homopolymer_cons, dna_length=opt.dna_length_fixed,
-                                 random_base_seq=opt.random_base_seq)
+                                 random_base_seq=opt.random_base_seq, random_seed=opt.random_seed)
     binary_decoder = ''.join(binary_decoder)
     binary_decoder_list = []
     binary_decoder_list[:0] = binary_decoder
