@@ -57,10 +57,13 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
     dna_data = []
     binary_original_data = []
 
+    # Set flag for reading data
+    flag = 0
+    
     # Record time
     start_time = time.time()
     all_data = len(binary_data)
-    while binary_data:
+    while flag < all_data:
         # Record the results
         compare_added_symbol_list = []
         add_symbol_list = []
@@ -74,15 +77,12 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
             binary_base = binary_base_list[i]
 
             # Add the random binary sequence to the original sequence
-            if len(binary_base) <= len(binary_data):
-                binary_data_addition = np.array([''] * len(binary_base))
-                binary_data_addition[binary_base == binary_data[:len(binary_base)]] = '0'
-                binary_data_addition[binary_base != binary_data[:len(binary_base)]] = '1'
+            if len(binary_base) <= all_data - flag:
+                ori_data = binary_data[flag:len(binary_base)]
             else:
-                binary_data_addition = np.array([''] * len(binary_data))
-                binary_data_addition[binary_base[:len(binary_data)] == binary_data] = '0'
-                binary_data_addition[binary_base[:len(binary_data)] != binary_data] = '1'
-            binary_data_addition.tolist()
+                binary_base = binary_base[:all_data - flag]
+
+            binary_data_addition = [str(int(x) ^ int(y)) for x, y in zip(binary_base, ori_data)]
 
             # Add the random binary sequence to the original sequence
             first_base = first_base_list[i]
@@ -120,17 +120,17 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
         last_symbol = last_symbol_list[index_min_]
         gc_count = gc_count_list[index_min_]
         dna_data_one_seq = dna_seq_list[index_min_]
-        flag = flag_list[index_min_]
+        flag_check = flag_list[index_min_]
 
         # Update and record binary data
-        binary_encoded = binary_data[:flag]
-        binary_data = binary_data[flag:]
+        binary_encoded = binary_data[flag:flag+flag_check]
+        flag += flag_check
 
         # Add bases to meet GC content constraint
         round_ = added_num_symbols // 2
         reminder_ = added_num_symbols % 2
         gc_content_list.append(added_num_symbols)
-        gc_count_num_list.append(gc_count[0])
+        gc_count_num_list.append(gc_count)
 
         if reminder_ == 0:
             add_bases = add_symbol * round_
@@ -216,36 +216,7 @@ def homo_encoding(homopolymer_constraint, binary_data, dna_length, codecmap=Enco
 # Calculate the number of added symbols to meet GC content constraint
 def calculate_added_symbols(dna_data, gc_upper, gc_lower, dna_length):
     # Count the number of bases 'C' and 'G'
-    bases_, count_ = np.unique(dna_data, return_counts=True)
-
-    if count_[np.where(bases_ == 'C')] or count_[np.where(bases_ == 'G')]:
-        if count_[np.where(bases_ == 'C')]:
-            _gc_count_c = count_[np.where(bases_ == 'C')]
-        else:
-            _gc_count_c = 0
-
-        if count_[np.where(bases_ == 'G')]:
-            _gc_count_g = count_[np.where(bases_ == 'G')]
-        else:
-            _gc_count_g = 0
-
-        _gc_count = _gc_count_c + _gc_count_g
-
-    elif count_[np.where(bases_ == 'A')] or count_[np.where(bases_ == 'T')]:
-        if count_[np.where(bases_ == 'A')]:
-            _gc_count_a = count_[np.where(bases_ == 'A')]
-        else:
-            _gc_count_a = 0
-
-        if count_[np.where(bases_ == 'T')]:
-            _gc_count_t = count_[np.where(bases_ == 'T')]
-        else:
-            _gc_count_t = 0
-
-        _gc_count = dna_length - (_gc_count_a + _gc_count_t)
-
-    else:
-        raise ValueError("Encoded DNA sequence error, please check binary data")
+    _gc_count = sum(1 for x in dna_data if x == 'C' or x == 'G')
 
     # Too few "C" and "G" bases
     if (_gc_count / dna_length) < gc_lower:
