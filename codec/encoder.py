@@ -34,7 +34,7 @@ def encoder_b2d_gc(dna_data, gc_upper=0.4, gc_lower=0.6, dna_length=100):
         round_ = added_num_symbols // 2
         reminder_ = added_num_symbols % 2
         gc_content_list.append(added_num_symbols)
-        gc_count_list.append(gc_count[0])
+        gc_count_list.append(gc_count)
 
         if reminder_ == 0:
             add_bases = add_symbol * round_
@@ -76,7 +76,6 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
         for i in range(len(binary_base_list)):
             binary_base = binary_base_list[i]
 
-            # Add the random binary sequence to the original sequence
             if len(binary_base) <= all_data - flag:
                 ori_data = binary_data[flag:len(binary_base)]
             else:
@@ -86,7 +85,6 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
 
             # Add the random binary sequence to the original sequence
             first_base = first_base_list[i]
-
             # Get a fixed-length DNA sequences and end-of-binary sequence encoding flag
             dna_data_one_seq, flag, remain_seq = \
                 homo_encoding(homopolymer, binary_data_addition, dna_length, codec_map,

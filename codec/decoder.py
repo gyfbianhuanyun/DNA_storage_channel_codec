@@ -11,7 +11,6 @@ def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b, dna_length=10
     for i in range(0, len(dna_data)):
         # Initial state
         homopolymer_count = 1
-
         if random_base_seq:
             start_idx = 1
             check_base = dna_data[i][0]
@@ -23,7 +22,6 @@ def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b, dna_length=10
         for j in range(start_idx, dna_length+start_idx):
             if j == len(dna_data[i]):
                 break
-
             # Determine whether the homopolymer constraints are met
             if homopolymer_count < homopolymer:
                 # Convert DNA to binary
