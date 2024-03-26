@@ -2,7 +2,6 @@ from codec_map import Encode_Map_b2d, first_base_list
 from utils import gen_binary_seq, running_progress
 import math
 import time
-import numpy as np
 
 
 # Encoding (satisfies homopolymer constraints)
