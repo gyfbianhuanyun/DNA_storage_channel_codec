@@ -20,10 +20,12 @@ def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b, dna_length=10
 
         # Padding sequence decoding
         if i == len(dna_data) - 1:
+            last_seq = True
             dna_last_seq = dna_data[i][:dna_length + 1 + start_idx]
             # find padding index
             end_idx = len(dna_last_seq) - dna_last_seq[::-1].index('A') - 1
         else:
+            last_seq = False
             end_idx = dna_length+start_idx
 
         _binary_seq_ = []
@@ -32,6 +34,21 @@ def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b, dna_length=10
                 break
             # Determine whether the homopolymer constraints are met
             if homopolymer_count < homopolymer:
+                # Check the last 2bases to
+                # determine whether the last binary number is encoded in 1bit or 2bits
+                if last_seq and j == end_idx - 2:
+                    last_symbol = dna_data[i][j + 1]
+                    if last_symbol == 'C':
+                        _binary_seq_.append('0')
+                    elif last_symbol == 'T':
+                        _binary_seq_.append('1')
+                    elif last_symbol == 'G':
+                        _binary_seq_.append('00')
+                    else:
+                        present_bits = codec_map[dna_data[i][j]]
+                        _binary_seq_.append(present_bits)
+                    break
+
                 # Convert DNA to binary
                 dna_symbol = dna_data[i][j]
                 present_bits = codec_map[dna_symbol]
