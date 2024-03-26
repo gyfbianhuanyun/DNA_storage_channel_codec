@@ -59,7 +59,7 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
 
     # Set flag for reading data
     flag = 0
-    
+
     # Record time
     start_time = time.time()
     all_data = len(binary_data)
@@ -218,7 +218,7 @@ def calculate_added_symbols(dna_data, gc_upper, gc_lower, dna_length):
 
     # Too few "C" and "G" bases
     if (_gc_count / dna_length) < gc_lower:
-        added_symbol = math.ceil(abs((dna_length * gc_lower - _gc_count) / (1 - gc_lower)))
+        added_symbol = math.ceil((dna_length * gc_lower - _gc_count) / (1 - gc_lower))
         if dna_data[-1] == 'C':
             add_symbol = 'GC'
             last_symbol = 'G'
@@ -228,7 +228,7 @@ def calculate_added_symbols(dna_data, gc_upper, gc_lower, dna_length):
 
     # Too many "C" and "G" bases
     elif (_gc_count / dna_length) > gc_upper:
-        added_symbol = int(abs((dna_length * gc_upper - _gc_count) / (1 - gc_upper)))
+        added_symbol = math.ceil((_gc_count - dna_length * gc_upper) / gc_upper)
         if dna_data[-1] == 'A':
             add_symbol = 'TA'
             last_symbol = 'T'

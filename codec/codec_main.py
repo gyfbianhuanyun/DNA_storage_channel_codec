@@ -12,7 +12,11 @@ def codec_processing(binary_data, opt):
     binary_data_encoded, dna_data = encoder_b2d_homo(binary_data, homopolymer=opt.homopolymer_cons,
                                                      dna_length=opt.dna_length_fixed)
 
-    dna_bases_num = len(dna_data) * opt.dna_length_fixed
+    if opt.random_base_seq:
+        dna_bases_num = len(dna_data) * (opt.dna_length_fixed + 1)
+    else:
+        dna_bases_num = len(dna_data) * opt.dna_length_fixed
+
     binary_bits = opt.binary_data_bits
     print("\tHomopolymer:")
 
@@ -29,7 +33,7 @@ def codec_processing(binary_data, opt):
             encoder_b2d_random_base(binary_data, homopolymer=opt.homopolymer_cons, dna_length=opt.dna_length_fixed,
                                     gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower,
                                     random_seed=opt.random_seed)
-
+        gc_content = [x + 1 for x in gc_content]
     else:
         dna_data, gc_content, gc_count = \
             encoder_b2d_gc(dna_data, gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower,
@@ -48,10 +52,8 @@ def codec_processing(binary_data, opt):
     print(f"\t\tTotal number of bases added: {sum_}")
     print(f"\t\tExpected value: {expected_gc}")
 
+    dna_bases_num = len(dna_data) * opt.dna_length_fixed
     dna_bases_num += sum_
-    # Random binary sequence case: add the first base in each DNA sequence
-    if opt.random_base_seq:
-        dna_bases_num += len(gc_content)
 
     print(f"\tEncoding results:")
     print(f"\t\tMapping potential: {len(binary_data_encoded)/dna_bases_num}(bits/nt)")

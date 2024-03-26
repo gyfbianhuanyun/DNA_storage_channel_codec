@@ -59,7 +59,7 @@ def read_data(file_path, read_mode_rb):
         data_list = read_gz_rb(file_path)
 
     else:
-        if file_path.endswith(('.jpg', 'ppm', 'png', 'jpeg')):
+        if file_path.endswith(('.jpg', 'ppm', 'png', 'jpeg', 'gif', 'bmp')):
             data_list = read_pic(file_path)
         elif file_path.endswith('.txt'):
             data_list = read_string(file_path)
@@ -67,7 +67,7 @@ def read_data(file_path, read_mode_rb):
             data_list = read_gz_rb(file_path)
         else:
             raise ValueError("Data load error, please check data file path or data file type"
-                             "(jpg/ppm/txt/gz)")
+                             "(jpg/ppm/txt/gz/gif/bmp)")
 
     return data_list
 
@@ -131,5 +131,7 @@ def running_progress(all_data, encoded_data, start_time):
     check_time = time.time()
     percent = format(encoded_data / all_data * 100, '.2f')
     cost_time = format(check_time - start_time, '.2f')
+    if not float(percent):
+        percent = 0.01
     estimated_time = format(100.0 / float(percent) * float(cost_time), '.2f')
     print(f'\t\t{percent}%, time:{cost_time}s, estimated time:{estimated_time}s', end='\r')
