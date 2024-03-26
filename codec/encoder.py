@@ -77,7 +77,7 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
             binary_base = binary_base_list[i]
 
             if len(binary_base) <= all_data - flag:
-                ori_data = binary_data[flag:len(binary_base)]
+                ori_data = binary_data[flag:len(binary_base) + flag]
             else:
                 binary_base = binary_base[:all_data - flag]
 
@@ -86,7 +86,7 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
             # Add the random binary sequence to the original sequence
             first_base = first_base_list[i]
             # Get a fixed-length DNA sequences and end-of-binary sequence encoding flag
-            dna_data_one_seq, flag, remain_seq = \
+            dna_data_one_seq, _flag_, remain_seq = \
                 homo_encoding(homopolymer, binary_data_addition, dna_length, codec_map,
                               random_base_seq=True, check_base=first_base)
 
@@ -106,7 +106,7 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
             add_symbol_list.append(add_symbol)
             last_symbol_list.append(last_symbol)
             gc_count_list.append(gc_count)
-            flag_list.append(flag)
+            flag_list.append(_flag_)
             dna_seq_list.append(dna_data_one_seq)
 
         # Compare the results, select the cases with the least bases added
