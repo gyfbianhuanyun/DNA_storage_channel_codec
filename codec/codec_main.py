@@ -15,7 +15,7 @@ def codec_processing(binary_data, opt):
     if opt.random_base_seq:
         dna_bases_num = len(dna_data) * (opt.dna_length_fixed + 1)
     else:
-        dna_bases_num = len(dna_data) * opt.dna_length_fixed
+        dna_bases_num = sum(len(dna_seq) for dna_seq in dna_data)
 
     binary_bits = opt.binary_data_bits
     print("\tHomopolymer:")
@@ -52,7 +52,7 @@ def codec_processing(binary_data, opt):
     print(f"\t\tTotal number of bases added: {sum_}")
     print(f"\t\tExpected value: {expected_gc}")
 
-    dna_bases_num = len(dna_data) * opt.dna_length_fixed
+    dna_bases_num = sum(len(dna_seq) for dna_seq in dna_data)
     dna_bases_num += sum_
 
     print(f"\tEncoding results:")

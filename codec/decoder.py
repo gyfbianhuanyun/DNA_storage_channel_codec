@@ -18,8 +18,16 @@ def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b, dna_length=10
             start_idx = 0
             check_base = None
 
+        # Padding sequence decoding
+        if i == len(dna_data) - 1:
+            dna_last_seq = dna_data[i][:dna_length + 1 + start_idx]
+            # find padding index
+            end_idx = len(dna_last_seq) - dna_last_seq[::-1].index('A') - 1
+        else:
+            end_idx = dna_length+start_idx
+
         _binary_seq_ = []
-        for j in range(start_idx, dna_length+start_idx):
+        for j in range(start_idx, end_idx):
             if j == len(dna_data[i]):
                 break
             # Determine whether the homopolymer constraints are met

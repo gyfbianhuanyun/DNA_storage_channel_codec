@@ -11,10 +11,10 @@ def encoder_b2d_homo(binary_data, homopolymer=3, codec_map=Encode_Map_b2d, dna_l
     dna_data_all, flag, dna_seq_last = \
         homo_encoding(homopolymer, binary_data, dna_length, codec_map)
 
-    # When the length of the DNA sequence does not meet the fixed length,
-    # delete the binary sequence corresponding to the DNA sequence
+    # When the length of the DNA sequence does not meet the fixed length, pad the DNA base
     if dna_seq_last:
-        binary_data = binary_data[:flag]
+        dna_seq_last = padding_dna_sequence(dna_seq_last, dna_length)
+        dna_data_all.append(dna_seq_last)
 
     return binary_data, dna_data_all
 
@@ -24,11 +24,11 @@ def encoder_b2d_homo(binary_data, homopolymer=3, codec_map=Encode_Map_b2d, dna_l
 def encoder_b2d_gc(dna_data, gc_upper=0.4, gc_lower=0.6, dna_length=100):
     gc_content_list = []
     gc_count_list = []
-    dna_data_array = np.array(dna_data)
+    # dna_data_array = np.array(dna_data)
     for i in range(len(dna_data)):
         # Count the number of bases 'C' and 'G'
         added_num_symbols, add_symbol, last_symbol, gc_count = \
-            calculate_added_symbols(dna_data_array[i], gc_upper, gc_lower, dna_length)
+            calculate_added_symbols(dna_data[i], gc_upper, gc_lower, dna_length)
 
         # Add bases to meet GC content constraint
         round_ = added_num_symbols // 2
@@ -243,3 +243,17 @@ def calculate_added_symbols(dna_data, gc_upper, gc_lower, dna_length):
         last_symbol = ''
 
     return added_symbol, add_symbol, last_symbol, _gc_count
+
+
+# Padding the last DNA sequence
+def padding_dna_sequence(sequence, target_length=100):
+    # Count the number of padding bases
+    padding_count = target_length - len(sequence)
+
+    # Padding bases
+    padding_sequence = ['C' if i % 2 == 0 else 'T' for i in range(padding_count)]
+
+    # Add padding marker base
+    encoded_sequence = sequence + ['A'] + padding_sequence
+
+    return encoded_sequence
