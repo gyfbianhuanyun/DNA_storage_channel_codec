@@ -14,18 +14,21 @@ Binary to DNA sequence codec
     Compress data or not
 2. Encoding
 
-    A. Homopolymer constraint encoding
+    A. Homopolymer constraint encoding (Homopolymer encoder)
 
-    B. GC content constraint encoding
+    B. GC content constraint encoding (GC content encoder)
 
-    C. Calculate mapping potential
+    C. XOR encoding (XOR encoder)
+
+    D. Calculate mapping potential
+
 3. Decoding
-4. Check encoding result
+4. Check result
     Whether the decoded binary data is equal to the original binary data
 
 
 ### 1. Read data
-Our method can process multiple types of images(jpg, ppm) or text(txt) data.
+Our method can process multiple types of images(jpg, ppm, png, gif, bmp) or text(txt) data.
 
 * For image data:
     
@@ -43,13 +46,13 @@ Then we compress the data (lossless) using gzip (optional).
 
 In the end, we get a list containing only binary data
 
-### 2. Encoding
+### 2. Encoder
 
-#### A. Homopolymer constraint encoding
+#### A. Homopolymer constraint encoder
 
 * Step 1: Encode binary data into DNA base symbols according to ACGT diagrams {A: 00, C: 01, G: 10, T: 11}
 
-* Step 2: When 3 identical bases occur, read the next bit
+* Step 2: When _h_ identical bases occur, read the next bit (h: homopolymer constraint)
         
     a. if the last base is A or T, then the next bit
             0: C, 1: G
@@ -66,12 +69,14 @@ If the homopolymer constraint is 3
 
 Binary data:   0101010101010
 Step 1: DNA:    C C C
-Step 2: The next byte is 0, so the next base is A
+Step 2: The next bit is 0, so the next base is A
         DNA:    C C CA
-Step 3: DNA:    C C CA G G G
-DNA    data:    CCCAGGG  
+Step 3: Repeat Step 1
+        DNA:    C C CA G G G
+Step 4: Encoding results
+        DNA:    CCCAGGG  
 ```
-#### B. GC content constraint encoding
+#### B. GC content constraint encoder
 
 Calculate the proportion of GC bases and add corresponding
 bases to meet the constraint
@@ -84,12 +89,59 @@ Calculation:    0.4 <= 6 / (7 + x) <= 0.6
                   3 <= x <= 8
 Added DNA  :    CCCAGGGATA
 ```
-#### C. Calculate mapping potential
+
+#### C. XOR encoder
+
+To reduce the number of GC additions,
+i.e. reduce the possibility of potentially long sequences.
+
+* Step 1: Randomly generate 4 binary sequences using 4 bases to refer to them.
+* Step 2: XORed with the original binary sequence respectively.
+* Step 3: Encoding via homopolymer encoder and GC content encoder.
+* Step 4: Select the case with the smallest number of additional GC bases
+and place its corresponding base at the front of the sequence.
+
+For example:
+```
+If GC content constraint is 40% ~ 60%.
+   Homopolymer constraint is 3
+
+Binary data     B:   01010101010100
+Step 1: Generate 4 binary sequences
+                A:   10011001101000
+                C:   11100111010011
+                G:   00100100111101
+                T:   01110001100010 
+Step 2: XOR with the original data
+        B  XOR  A:   11001100111100
+        B  XOR  C:   10110010000111
+        B  XOR  G:   01110001101001
+        B  XOR  T:   00100100110110
+Step 3: Homopolymer encoder and GC content encoder
+                A:   T A T A T T A  CGCGC
+                C:   G T A G A C T  
+                G:   C T A C G G C  AT
+                T:   A G C A T C G  
+Step 4: Select the smallest number of additional GC bases
+              DNA:   G T A G A C T
+        Place the 'C' at the front of the sequence
+              DNA:   C G T A G A C T
+```
+
+#### D. Calculate mapping potential
 $$ Mapping\  potential = {Binary\  bits \over DNA\  bases} $$
 
-### 3. Decoding
-1. Check if there are 3 identical bases, and then decode the sequence according to the direction of the adjacent bases
-2. Only select fixed-length DNA bases to decode
+### 3. Decoder
+A. If XOR encoder is used, check the first base to choice the generated binary sequence 
+
+B. Select fixed-length DNA bases to remove added bases 
+
+C. Decoding DNA sequence to binary sequence by ACGT diagrams
+
+    If h identical bases appear, then the h+1th base is decoded through 2.Encoder.A.Homopolymer encoder.Step2 to obtain the binary sequence.
+
+D. If the XOR encoder is used, the binary sequence is XORed
+with the randomly generated sequence to obtain the final decoded sequence.
 
 
 ### 4. Check results
@@ -143,5 +195,6 @@ under given conditions (fixed DNA sequence length) and homopolymer constraints
 --rounds: Binary to DNA sequence encoding and decoding repeated rounds
 --compression: Whether to compress binary data
 --gc_hist: Draw a histogram of the number of DNA bases added under the constraint of GC content
---random_base_seq: Add random binary sequence to avoid excessive GC imbalance issues
+--random_base_seq: Add random binary sequence to avoid excessive GC imbalance issues (XOR encoder)
+--random_seed: The seed of randomly generating binary sequence (XOR encoder)
 ```
