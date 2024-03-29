@@ -86,5 +86,5 @@ if __name__ == '__main__':
                         help="The random seed to use when generating random binary sequences")
 
     dna_codec_opt = parser.parse_args()
-    dna_codec_opt.random_base_seq = True
+
     main(dna_codec_opt)

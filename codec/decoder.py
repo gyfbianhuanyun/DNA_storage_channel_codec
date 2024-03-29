@@ -6,6 +6,7 @@ from utils import gen_binary_seq
 def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b, dna_length=100,
                 random_base_seq=False, random_seed=555):
     binary_seq = []
+    dna_num = len(dna_data)
 
     # Read data from DNA list
     for i in range(0, len(dna_data)):
@@ -18,15 +19,19 @@ def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b, dna_length=10
             start_idx = 0
             check_base = None
 
-        # Padding sequence decoding
-        if i == len(dna_data) - 1:
+        if dna_num == 1:
             last_seq = True
-            dna_last_seq = dna_data[i][:dna_length + 1 + start_idx]
-            # find padding index
-            end_idx = len(dna_last_seq) - dna_last_seq[::-1].index('A') - 1
+            end_idx = dna_length
         else:
-            last_seq = False
-            end_idx = dna_length+start_idx
+            # Padding sequence decoding
+            if i == len(dna_data) - 1:
+                last_seq = True
+                dna_last_seq = dna_data[i][:dna_length + 1 + start_idx]
+                # find padding index
+                end_idx = len(dna_last_seq) - dna_last_seq[::-1].index('A') - 1
+            else:
+                last_seq = False
+                end_idx = dna_length+start_idx
 
         _binary_seq_ = []
         for j in range(start_idx, end_idx):

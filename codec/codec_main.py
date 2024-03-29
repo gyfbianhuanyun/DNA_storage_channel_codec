@@ -9,8 +9,9 @@ def codec_processing(binary_data, opt):
     print("\tRead binary data")
 
     # Encoding (DNA data: list)
-    binary_data_encoded, dna_data = encoder_b2d_homo(binary_data, homopolymer=opt.homopolymer_cons,
-                                                     dna_length=opt.dna_length_fixed)
+    binary_data_encoded, dna_data, dna_length \
+        = encoder_b2d_homo(binary_data, homopolymer=opt.homopolymer_cons,
+                           dna_length=opt.dna_length_fixed)
 
     if opt.random_base_seq:
         dna_bases_num = len(dna_data) * (opt.dna_length_fixed + 1)
@@ -69,7 +70,10 @@ def codec_processing(binary_data, opt):
     print("\tRead DNA data")
 
     # Decoding
-    binary_decoder = decoder_d2b(dna_data_, homopolymer=opt.homopolymer_cons, dna_length=opt.dna_length_fixed,
+    if opt.dna_length_fixed != -1:
+        dna_length = opt.dna_length_fixed
+
+    binary_decoder = decoder_d2b(dna_data_, homopolymer=opt.homopolymer_cons, dna_length=dna_length,
                                  random_base_seq=opt.random_base_seq, random_seed=opt.random_seed)
     binary_decoder = ''.join(binary_decoder)
     binary_decoder_list = []

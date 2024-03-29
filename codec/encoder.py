@@ -11,12 +11,16 @@ def encoder_b2d_homo(binary_data, homopolymer=3, codec_map=Encode_Map_b2d, dna_l
     dna_data_all, flag, dna_seq_last = \
         homo_encoding(homopolymer, binary_data, dna_length, codec_map, include_last_seq=True)
 
-    # When the length of the DNA sequence does not meet the fixed length, pad the DNA base
-    if dna_seq_last:
-        dna_seq_last = padding_dna_sequence(dna_seq_last, dna_length)
-        dna_data_all.append(dna_seq_last)
+    if dna_length == -1:
+        dna_data_all = [dna_seq_last]
+        dna_length = len(dna_seq_last)
+        # When the length of the DNA sequence does not meet the fixed length, pad the DNA base
+    else:
+        if dna_seq_last:
+            dna_seq_last = padding_dna_sequence(dna_seq_last, dna_length)
+            dna_data_all.append(dna_seq_last)
 
-    return binary_data, dna_data_all
+    return binary_data, dna_data_all, dna_length
 
 
 # Encoding (satisfies GC content constraints)
