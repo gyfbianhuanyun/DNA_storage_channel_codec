@@ -186,6 +186,7 @@ under given conditions (fixed DNA sequence length) and homopolymer constraints
 --gc_cons_lower: The lower bound probability of DNA storage channel GC content constraints
 --gc_cons_upper: The upper bound probability of DNA storage channel GC content constraints
 --dna_length_fixed: The fixed DNA sequence length of the DNA storage channel
+                    If dna_length_fixed = -1, encode whole binary_data into single DNA strand
 
 # Generated file in codec processing
 --encode_dna_filename: Encoded DNA sequence filename
