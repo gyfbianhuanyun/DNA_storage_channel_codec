@@ -94,6 +94,9 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
                 last_seq = True
                 ori_data = binary_data[flag:]
 
+            if dna_length == -1:
+                last_seq = True
+
             binary_data_addition = [str(int(x) ^ int(y)) for x, y in zip(binary_base, ori_data)]
 
             # Add the random binary sequence to the original sequence
@@ -110,12 +113,11 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
             else:
                 # pad the last sequence
                 dna_one_seq = [first_base] + remain_seq
-                dna_one_seq = padding_dna_sequence(dna_one_seq, dna_length + 1)
+                if dna_length != -1:
+                    dna_one_seq = padding_dna_sequence(dna_one_seq, dna_length + 1)
                 _flag_ = all_data - flag
 
             # Calculate the number of symbols that will be added to satisfy GC content constraints
-            if len(dna_one_seq) != dna_length + 1:
-                print(i, flag, len(dna_one_seq), dna_length + 1)
             added_num_symbols, add_symbol, last_symbol, gc_count = \
                 calculate_added_symbols(dna_one_seq, gc_upper, gc_lower, last_seq)
 
@@ -136,6 +138,7 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
         last_symbol = last_symbol_list[index_min_]
         gc_count = gc_count_list[index_min_]
         dna_one_seq = dna_seq_list[index_min_]
+        dna_xor_length = len(dna_one_seq)
         flag_check = flag_list[index_min_]
 
         # Update and record binary data
@@ -162,12 +165,10 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
         encoded_data = all_data - len(binary_original_data)
         running_progress(all_data, encoded_data, start_time)
 
-    if binary_original_data == binary_data:
-        print(True)
-    else:
-        print(False)
+    if dna_length == -1:
+        dna_length = dna_xor_length
 
-    return binary_original_data, dna_data, gc_content_list, gc_count_num_list
+    return binary_original_data, dna_data, gc_content_list, gc_count_num_list, dna_length
 
 
 # Homopolymer encoding

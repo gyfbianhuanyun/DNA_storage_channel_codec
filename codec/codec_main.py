@@ -30,7 +30,7 @@ def codec_processing(binary_data, opt):
 
     print(f"\tGC content:")
     if opt.random_base_seq:
-        binary_data_encoded, dna_data, gc_content, gc_count = \
+        binary_data_encoded, dna_data, gc_content, gc_count, dna_length = \
             encoder_b2d_random_base(binary_data, homopolymer=opt.homopolymer_cons, dna_length=opt.dna_length_fixed,
                                     gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower,
                                     random_seed=opt.random_seed)
@@ -89,8 +89,6 @@ def codec_processing(binary_data, opt):
     else:
         print("Codec failed")
 
-    if binary_data == binary_data_encoded:
-        print(True)
     print(f'Data information:\n'
           f'\tOriginal binary sequence (bits): {len(binary_data)}\n'
           f'\tEncoded  binary sequence (bits): {len(binary_data_encoded)}\n'
