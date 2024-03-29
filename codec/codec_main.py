@@ -6,6 +6,8 @@ from utils import write_data2file, read_dna, plot_gc_hist
 def codec_processing(binary_data, opt):
     # Encoder
     print("Encode start")
+    if opt.dna_length_fixed == -1:
+        print("\tEncode binary into single DNA strand")
     print("\tRead binary data")
 
     # Encoding (DNA data: list)
@@ -30,6 +32,7 @@ def codec_processing(binary_data, opt):
 
     print(f"\tGC content:")
     if opt.random_base_seq:
+        print(f"\tXOR encoder:")
         binary_data_encoded, dna_data, gc_content, gc_count, dna_length = \
             encoder_b2d_random_base(binary_data, homopolymer=opt.homopolymer_cons, dna_length=opt.dna_length_fixed,
                                     gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower,
