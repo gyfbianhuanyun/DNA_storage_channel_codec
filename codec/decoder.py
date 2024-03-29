@@ -83,7 +83,8 @@ def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b, dna_length=10
 
         if random_base_seq:
             index_ = first_base_list.index(dna_data[i][0])
-            binary_base_list = gen_binary_seq(dna_length, seed=random_seed, times=2)
+            # XXX binary_length is at most 2 * dna_length
+            binary_base_list = gen_binary_seq(2*len(dna_data[i]), seed=random_seed)
             binary_base = binary_base_list[index_]
 
             for l in range(len(_binary_seq_)):
