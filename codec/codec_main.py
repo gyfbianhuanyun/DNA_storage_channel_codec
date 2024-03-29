@@ -14,7 +14,7 @@ def codec_processing(binary_data, opt):
                            dna_length=opt.dna_length_fixed)
 
     if opt.random_base_seq:
-        dna_bases_num = len(dna_data) * (opt.dna_length_fixed + 1)
+        dna_bases_num = sum(len(dna_seq) for dna_seq in dna_data) + len(dna_data) * 1
     else:
         dna_bases_num = sum(len(dna_seq) for dna_seq in dna_data)
 
