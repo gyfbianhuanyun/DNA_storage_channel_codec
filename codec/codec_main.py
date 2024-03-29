@@ -36,8 +36,7 @@ def codec_processing(binary_data, opt):
         gc_content = [x + 1 for x in gc_content]
     else:
         dna_data, gc_content, gc_count = \
-            encoder_b2d_gc(dna_data, gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower,
-                           dna_length=opt.dna_length_fixed)
+            encoder_b2d_gc(dna_data, gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower)
 
     # Calculate the expected number of bases added when GC constraints are met
     sum_ = sum(gc_content)
@@ -86,6 +85,8 @@ def codec_processing(binary_data, opt):
     else:
         print("Codec failed")
 
+    if binary_data == binary_data_encoded:
+        print(True)
     print(f'Data information:\n'
           f'\tOriginal binary sequence (bits): {len(binary_data)}\n'
           f'\tEncoded  binary sequence (bits): {len(binary_data_encoded)}\n'

@@ -29,7 +29,7 @@ def encoder_b2d_gc(dna_data, gc_upper=0.4, gc_lower=0.6):
     for i in range(dna_length):
         # Count the number of bases 'C' and 'G'
         added_num_symbols, add_symbol, last_symbol, gc_count = \
-            calculate_added_symbols(dna_data[i], gc_upper, gc_lower, dna_length)
+            calculate_added_symbols(dna_data[i], gc_upper, gc_lower)
 
         # Add bases to meet GC content constraint
         round_ = added_num_symbols // 2
@@ -49,11 +49,11 @@ def encoder_b2d_gc(dna_data, gc_upper=0.4, gc_lower=0.6):
 
 # Encoding (Add random binary sequence to avoid excessive GC imbalance)
 def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d, dna_length=-1,
-                            gc_upper=0.4, gc_lower=0.6, random_seed=555):
+                            gc_upper=0.4, gc_lower=0.6, random_seed=222):
     # Generate random binary sequence based on fixed seed
     # XXX if dna_length=-1, add binary seq of length len(binary_data)
     if dna_length == -1:
-        bianry_length = len(binary_data)
+        binary_length = len(binary_data)
     else:
         binary_length = dna_length * 2
     binary_base_list = gen_binary_seq(binary_length, seed=random_seed)
@@ -110,8 +110,10 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
                 _flag_ = all_data - flag
 
             # Calculate the number of symbols that will be added to satisfy GC content constraints
+            if len(dna_one_seq) != dna_length + 1:
+                print(i, flag, len(dna_one_seq), dna_length + 1)
             added_num_symbols, add_symbol, last_symbol, gc_count = \
-                calculate_added_symbols(dna_one_seq, gc_upper, gc_lower, dna_length + 1)
+                calculate_added_symbols(dna_one_seq, gc_upper, gc_lower, last_seq)
 
             # Record the results
             compare_added_symbol_list.append(added_num_symbols)
@@ -155,6 +157,11 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
         # Print running progress
         encoded_data = all_data - len(binary_original_data)
         running_progress(all_data, encoded_data, start_time)
+
+    if binary_original_data == binary_data:
+        print(True)
+    else:
+        print(False)
 
     return binary_original_data, dna_data, gc_content_list, gc_count_num_list
 
@@ -243,8 +250,11 @@ def homo_encoding(homopolymer_constraint, binary_data, dna_length=-1, codecmap=E
 
 
 # Calculate the number of added symbols to meet GC content constraint
-def calculate_added_symbols(dna_data, gc_upper, gc_lower):
-    dna_length = len(dna_data)
+def calculate_added_symbols(dna_data, gc_upper, gc_lower, last_seq=False):
+    if last_seq:
+        dna_length = len(dna_data) - 1
+    else:
+        dna_length = len(dna_data)
 
     # Count the number of bases 'C' and 'G'
     _gc_count = sum(1 for x in dna_data if x == 'C' or x == 'G')
