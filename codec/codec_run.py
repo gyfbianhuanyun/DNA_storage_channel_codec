@@ -54,7 +54,7 @@ if __name__ == '__main__':
                         help="Amount of binary data")
     parser.add_argument("--data_filename", type=str, default='test_file/plane.ppm',
                         help="Data file name")
-    parser.add_argument("--data_read_rb", type=str2bool, default=False,
+    parser.add_argument("--data_read_rb", type=str2bool, default=True,
                         help="Whether to use 'rb' mode to read data")
 
     # DNA storage channel constraints
