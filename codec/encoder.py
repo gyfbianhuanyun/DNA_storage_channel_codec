@@ -6,28 +6,34 @@ import time
 
 # Encoding (satisfies homopolymer constraints)
 # Get DNA sequence based on binary sequence
-def encoder_b2d_homo(binary_data, homopolymer=3, codec_map=Encode_Map_b2d, dna_length=100):
+def encoder_b2d_homo(binary_data, homopolymer=3, codec_map=Encode_Map_b2d, dna_length=-1):
+    # XXX If dna_length = -1, encode whole binary_data into single DNA strand
     dna_data_all, flag, dna_seq_last = \
         homo_encoding(homopolymer, binary_data, dna_length, codec_map, include_last_seq=True)
 
-    # When the length of the DNA sequence does not meet the fixed length, pad the DNA base
-    if dna_seq_last:
-        dna_seq_last = padding_dna_sequence(dna_seq_last, dna_length)
-        dna_data_all.append(dna_seq_last)
+    if dna_length == -1:
+        dna_data_all = [dna_seq_last]
+        dna_length = len(dna_seq_last)
+        # When the length of the DNA sequence does not meet the fixed length, pad the DNA base
+    else:
+        if dna_seq_last:
+            dna_seq_last = padding_dna_sequence(dna_seq_last, dna_length)
+            dna_data_all.append(dna_seq_last)
 
-    return binary_data, dna_data_all
+    return binary_data, dna_data_all, dna_length
 
 
 # Encoding (satisfies GC content constraints)
 # Calculate the number of bases to add to meet GC content constraints
-def encoder_b2d_gc(dna_data, gc_upper=0.4, gc_lower=0.6, dna_length=100):
+def encoder_b2d_gc(dna_data, gc_upper=0.4, gc_lower=0.6):
+    dna_length = len(dna_data)
     gc_content_list = []
     gc_count_list = []
     # dna_data_array = np.array(dna_data)
-    for i in range(len(dna_data)):
+    for i in range(dna_length):
         # Count the number of bases 'C' and 'G'
         added_num_symbols, add_symbol, last_symbol, gc_count = \
-            calculate_added_symbols(dna_data[i], gc_upper, gc_lower, dna_length)
+            calculate_added_symbols(dna_data[i], gc_upper, gc_lower)
 
         # Add bases to meet GC content constraint
         round_ = added_num_symbols // 2
@@ -46,10 +52,15 @@ def encoder_b2d_gc(dna_data, gc_upper=0.4, gc_lower=0.6, dna_length=100):
 
 
 # Encoding (Add random binary sequence to avoid excessive GC imbalance)
-def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d, dna_length=100,
-                            gc_upper=0.4, gc_lower=0.6, random_seed=555):
+def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d, dna_length=-1,
+                            gc_upper=0.4, gc_lower=0.6, random_seed=222):
     # Generate random binary sequence based on fixed seed
-    binary_base_list = gen_binary_seq(dna_length, seed=random_seed, times=2)
+    # XXX if dna_length=-1, add binary seq of length len(binary_data)
+    if dna_length == -1:
+        binary_length = len(binary_data)
+    else:
+        binary_length = dna_length * 2
+    binary_base_list = gen_binary_seq(binary_length, seed=random_seed)
 
     gc_content_list = []
     gc_count_num_list = []
@@ -83,6 +94,9 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
                 last_seq = True
                 ori_data = binary_data[flag:]
 
+            if dna_length == -1:
+                last_seq = True
+
             binary_data_addition = [str(int(x) ^ int(y)) for x, y in zip(binary_base, ori_data)]
 
             # Add the random binary sequence to the original sequence
@@ -99,12 +113,13 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
             else:
                 # pad the last sequence
                 dna_one_seq = [first_base] + remain_seq
-                dna_one_seq = padding_dna_sequence(dna_one_seq, dna_length + 1)
+                if dna_length != -1:
+                    dna_one_seq = padding_dna_sequence(dna_one_seq, dna_length + 1)
                 _flag_ = all_data - flag
 
             # Calculate the number of symbols that will be added to satisfy GC content constraints
             added_num_symbols, add_symbol, last_symbol, gc_count = \
-                calculate_added_symbols(dna_one_seq, gc_upper, gc_lower, dna_length + 1)
+                calculate_added_symbols(dna_one_seq, gc_upper, gc_lower, last_seq)
 
             # Record the results
             compare_added_symbol_list.append(added_num_symbols)
@@ -123,6 +138,7 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
         last_symbol = last_symbol_list[index_min_]
         gc_count = gc_count_list[index_min_]
         dna_one_seq = dna_seq_list[index_min_]
+        dna_xor_length = len(dna_one_seq)
         flag_check = flag_list[index_min_]
 
         # Update and record binary data
@@ -149,11 +165,14 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
         encoded_data = all_data - len(binary_original_data)
         running_progress(all_data, encoded_data, start_time)
 
-    return binary_original_data, dna_data, gc_content_list, gc_count_num_list
+    if dna_length == -1:
+        dna_length = dna_xor_length
+
+    return binary_original_data, dna_data, gc_content_list, gc_count_num_list, dna_length
 
 
 # Homopolymer encoding
-def homo_encoding(homopolymer_constraint, binary_data, dna_length, codecmap=Encode_Map_b2d,
+def homo_encoding(homopolymer_constraint, binary_data, dna_length=-1, codecmap=Encode_Map_b2d,
                   random_base_seq=False, check_base=None, include_last_seq=True):
     dna_data = []
     dna_seq = []
@@ -236,7 +255,12 @@ def homo_encoding(homopolymer_constraint, binary_data, dna_length, codecmap=Enco
 
 
 # Calculate the number of added symbols to meet GC content constraint
-def calculate_added_symbols(dna_data, gc_upper, gc_lower, dna_length):
+def calculate_added_symbols(dna_data, gc_upper, gc_lower, last_seq=False):
+    if last_seq:
+        dna_length = len(dna_data) - 1
+    else:
+        dna_length = len(dna_data)
+
     # Count the number of bases 'C' and 'G'
     _gc_count = sum(1 for x in dna_data if x == 'C' or x == 'G')
 

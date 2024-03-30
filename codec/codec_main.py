@@ -6,14 +6,17 @@ from utils import write_data2file, read_dna, plot_gc_hist
 def codec_processing(binary_data, opt):
     # Encoder
     print("Encode start")
+    if opt.dna_length_fixed == -1:
+        print("\tEncode binary into single DNA strand")
     print("\tRead binary data")
 
     # Encoding (DNA data: list)
-    binary_data_encoded, dna_data = encoder_b2d_homo(binary_data, homopolymer=opt.homopolymer_cons,
-                                                     dna_length=opt.dna_length_fixed)
+    binary_data_encoded, dna_data, dna_length \
+        = encoder_b2d_homo(binary_data, homopolymer=opt.homopolymer_cons,
+                           dna_length=opt.dna_length_fixed)
 
     if opt.random_base_seq:
-        dna_bases_num = len(dna_data) * (opt.dna_length_fixed + 1)
+        dna_bases_num = sum(len(dna_seq) for dna_seq in dna_data) + len(dna_data) * 1
     else:
         dna_bases_num = sum(len(dna_seq) for dna_seq in dna_data)
 
@@ -29,15 +32,15 @@ def codec_processing(binary_data, opt):
 
     print(f"\tGC content:")
     if opt.random_base_seq:
-        binary_data_encoded, dna_data, gc_content, gc_count = \
+        print(f"\tXOR encoder:")
+        binary_data_encoded, dna_data, gc_content, gc_count, dna_length = \
             encoder_b2d_random_base(binary_data, homopolymer=opt.homopolymer_cons, dna_length=opt.dna_length_fixed,
                                     gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower,
                                     random_seed=opt.random_seed)
         gc_content = [x + 1 for x in gc_content]
     else:
         dna_data, gc_content, gc_count = \
-            encoder_b2d_gc(dna_data, gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower,
-                           dna_length=opt.dna_length_fixed)
+            encoder_b2d_gc(dna_data, gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower)
 
     # Calculate the expected number of bases added when GC constraints are met
     sum_ = sum(gc_content)
@@ -70,7 +73,10 @@ def codec_processing(binary_data, opt):
     print("\tRead DNA data")
 
     # Decoding
-    binary_decoder = decoder_d2b(dna_data_, homopolymer=opt.homopolymer_cons, dna_length=opt.dna_length_fixed,
+    if opt.dna_length_fixed != -1:
+        dna_length = opt.dna_length_fixed
+
+    binary_decoder = decoder_d2b(dna_data_, homopolymer=opt.homopolymer_cons, dna_length=dna_length,
                                  random_base_seq=opt.random_base_seq, random_seed=opt.random_seed)
     binary_decoder = ''.join(binary_decoder)
     binary_decoder_list = []

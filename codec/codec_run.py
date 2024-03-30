@@ -54,7 +54,7 @@ if __name__ == '__main__':
                         help="Amount of binary data")
     parser.add_argument("--data_filename", type=str, default='test_file/plane.ppm',
                         help="Data file name")
-    parser.add_argument("--data_read_rb", type=str2bool, default=False,
+    parser.add_argument("--data_read_rb", type=str2bool, default=True,
                         help="Whether to use 'rb' mode to read data")
 
     # DNA storage channel constraints
@@ -65,7 +65,8 @@ if __name__ == '__main__':
     parser.add_argument("--gc_cons_upper", type=float, default=0.6,
                         help="The upper bound probability of DNA storage channel GC content constraints")
     parser.add_argument("--dna_length_fixed", type=int, default=100,
-                        help="The fixed DNA sequence length of the DNA storage channel")
+                        help="The fixed DNA sequence length of the DNA storage channel"
+                             "If dna_length_fixed = -1, encode whole binary_data into single DNA strand")
 
     # Generated file in codec processing
     parser.add_argument("--encode_dna_filename", type=str, default='encoder_DNA_sequence',

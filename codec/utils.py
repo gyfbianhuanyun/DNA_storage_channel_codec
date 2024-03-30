@@ -118,9 +118,9 @@ def tostring(binarystring):
 
 
 # Generate random binary sequence for base sequence
-def gen_binary_seq(dna_length, seed, times=2):
+def gen_binary_seq(binary_length, seed):
     binary_symbol = ['0', '1']
-    binary_bits = int(dna_length * times)
+    binary_bits = int(binary_length)
     np.random.seed(seed)
     binary_base_list = np.random.choice(binary_symbol, (4, binary_bits), p=[0.5, 0.5])
     return binary_base_list
