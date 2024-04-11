@@ -11,14 +11,19 @@ def codec_processing(binary_data, opt):
     print("\tRead binary data")
 
     # Encoding (DNA data: list)
-    binary_data_encoded, dna_data, dna_length \
+    binary_data_encoded, dna_data, dna_length, binary_encoded_num \
         = encoder_b2d_homo(binary_data, homopolymer=opt.homopolymer_cons,
                            dna_length=opt.dna_length_fixed)
 
-    if opt.random_base_seq:
-        dna_bases_num = sum(len(dna_seq) for dna_seq in dna_data) + len(dna_data) * 1
+    # Calculte the DNA bases
+    if binary_encoded_num != len(binary_data_encoded):
+        last = -1
     else:
-        dna_bases_num = sum(len(dna_seq) for dna_seq in dna_data)
+        last = len(dna_data)
+    if opt.random_base_seq:
+        dna_bases = sum(len(dna_seq) for dna_seq in dna_data[:last]) + len(dna_data[:last]) * 1
+    else:
+        dna_bases = sum(len(dna_seq) for dna_seq in dna_data[:last])
 
     binary_bits = opt.binary_data_bits
     print("\tHomopolymer:")
@@ -28,12 +33,12 @@ def codec_processing(binary_data, opt):
     else:
         print(f"\t\tOriginal file: {binary_bits} (without gzip compression)")
 
-    print(f"\t\tMapping potential: {len(binary_data_encoded)/dna_bases_num}(bits/nt)")
+    print(f"\t\tMapping potential: {binary_encoded_num/dna_bases}(bits/nt)")
 
     print(f"\tGC content:")
     if opt.random_base_seq:
         print(f"\tXOR encoder:")
-        binary_data_encoded, dna_data, gc_content, gc_count, dna_length = \
+        binary_data_encoded, dna_data, gc_content, gc_count, dna_length, binary_encoded_num = \
             encoder_b2d_random_base(binary_data, homopolymer=opt.homopolymer_cons, dna_length=opt.dna_length_fixed,
                                     gc_upper=opt.gc_cons_upper, gc_lower=opt.gc_cons_lower,
                                     random_seed=opt.random_seed)
@@ -55,11 +60,19 @@ def codec_processing(binary_data, opt):
     print(f"\t\tTotal number of bases added: {sum_}")
     print(f"\t\tExpected value: {expected_gc}")
 
-    dna_bases_num = sum(len(dna_seq) for dna_seq in dna_data)
+    if binary_encoded_num != len(binary_data_encoded):
+        last = -1
+    else:
+        last = len(dna_data)
+
+    if opt.dna_length_fixed == -1:
+        last = 1
+        binary_encoded_num = len(binary_data_encoded)
+    dna_bases_num = sum(len(dna_seq) for dna_seq in dna_data[:last])
     dna_bases_num += sum_
 
     print(f"\tEncoding results:")
-    print(f"\t\tMapping potential: {len(binary_data_encoded)/dna_bases_num}(bits/nt)")
+    print(f"\t\tMapping potential: {binary_encoded_num/dna_bases_num}(bits/nt)")
 
     # Write DNA data to file
     write_data2file(dna_data, opt.encode_dna_filename)
