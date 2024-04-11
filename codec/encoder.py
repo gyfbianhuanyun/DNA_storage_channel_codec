@@ -20,7 +20,7 @@ def encoder_b2d_homo(binary_data, homopolymer=3, codec_map=Encode_Map_b2d, dna_l
             dna_seq_last = padding_dna_sequence(dna_seq_last, dna_length)
             dna_data_all.append(dna_seq_last)
 
-    return binary_data, dna_data_all, dna_length
+    return binary_data, dna_data_all, dna_length, flag
 
 
 # Encoding (satisfies GC content constraints)
@@ -143,6 +143,7 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
 
         # Update and record binary data
         binary_encoded = binary_data[flag:flag+flag_check]
+        encoded_flag = flag
         flag += flag_check
 
         # Add bases to meet GC content constraint
@@ -168,7 +169,7 @@ def encoder_b2d_random_base(binary_data, homopolymer=3, codec_map=Encode_Map_b2d
     if dna_length == -1:
         dna_length = dna_xor_length
 
-    return binary_original_data, dna_data, gc_content_list, gc_count_num_list, dna_length
+    return binary_original_data, dna_data, gc_content_list, gc_count_num_list, dna_length, encoded_flag
 
 
 # Homopolymer encoding

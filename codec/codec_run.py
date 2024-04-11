@@ -69,9 +69,10 @@ if __name__ == '__main__':
                              "If dna_length_fixed = -1, encode whole binary_data into single DNA strand")
 
     # Generated file in codec processing
-    parser.add_argument("--encode_dna_filename", type=str, default='encoder_DNA_sequence',
+    parser.add_argument("--encode_dna_filename", type=str, default='output_files/encoder_DNA_sequence',
                         help="Encoded DNA sequence filename")
-    parser.add_argument("--decode_binary_filename", type=str, default='decoder_binary_sequence',
+    parser.add_argument("--decode_binary_filename", type=str,
+                        default='output_files/decoder_binary_sequence',
                         help="Decoded binary sequence filename")
 
     # Other codec processing options
