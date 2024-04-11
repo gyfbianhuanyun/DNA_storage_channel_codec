@@ -23,10 +23,7 @@ def codec_processing(binary_data, opt):
     if opt.dna_length_fixed == -1:
         last = 1
         binary_encoded_num = len(binary_data_encoded)
-    if opt.random_base_seq:
-        dna_bases = sum(len(dna_seq) for dna_seq in dna_data[:last]) + len(dna_data[:last]) * 1
-    else:
-        dna_bases = sum(len(dna_seq) for dna_seq in dna_data[:last])
+    dna_bases = sum(len(dna_seq) for dna_seq in dna_data[:last])
 
     binary_bits = opt.binary_data_bits
     print("\tHomopolymer:")
@@ -71,8 +68,7 @@ def codec_processing(binary_data, opt):
     if opt.dna_length_fixed == -1:
         last = 1
         binary_encoded_num = len(binary_data_encoded)
-    dna_bases_num = sum(len(dna_seq) for dna_seq in dna_data[:last])
-    dna_bases_num += sum_
+    dna_bases_num = sum(len(''.join(dna_seq)) for dna_seq in dna_data[:last])
 
     print(f"\tEncoding results:")
     print(f"\t\tMapping potential: {binary_encoded_num/dna_bases_num}(bits/nt)")
