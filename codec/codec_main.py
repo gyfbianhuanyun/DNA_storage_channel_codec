@@ -20,6 +20,9 @@ def codec_processing(binary_data, opt):
         last = -1
     else:
         last = len(dna_data)
+    if opt.dna_length_fixed == -1:
+        last = 1
+        binary_encoded_num = len(binary_data_encoded)
     if opt.random_base_seq:
         dna_bases = sum(len(dna_seq) for dna_seq in dna_data[:last]) + len(dna_data[:last]) * 1
     else:
