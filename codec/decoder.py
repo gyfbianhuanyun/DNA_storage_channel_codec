@@ -22,6 +22,7 @@ def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b, dna_length=10
         if dna_num == 1:
             if dna_length == -1:
                 last_seq = True
+                dna_length = len(dna_data[0])
                 end_idx = dna_length
             else:
                 # Only one single Sequence
