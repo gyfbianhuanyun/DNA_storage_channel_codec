@@ -85,8 +85,7 @@ def codec_processing(binary_data, opt):
     print("\tRead DNA data")
 
     # Decoding
-    if opt.dna_length_fixed != -1:
-        dna_length = opt.dna_length_fixed
+    dna_length = opt.dna_length_fixed
 
     binary_decoder = decoder_d2b(dna_data_, homopolymer=opt.homopolymer_cons, dna_length=dna_length,
                                  random_base_seq=opt.random_base_seq, random_seed=opt.random_seed)

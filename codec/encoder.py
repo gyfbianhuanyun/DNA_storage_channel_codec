@@ -252,6 +252,10 @@ def homo_encoding(homopolymer_constraint, binary_data, dna_length=-1, codecmap=E
             if random_base_seq:
                 break
 
+    # If there is only one single sequence
+    if flag == 0:
+        flag = len(binary_data)
+
     return dna_data, flag, dna_seq
 
 

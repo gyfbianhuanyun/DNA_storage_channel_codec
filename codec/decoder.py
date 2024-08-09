@@ -20,8 +20,16 @@ def decoder_d2b(dna_data, homopolymer=3, codec_map=Decode_Map_d2b, dna_length=10
             check_base = None
 
         if dna_num == 1:
-            last_seq = True
-            end_idx = dna_length
+            if dna_length == -1:
+                last_seq = True
+                dna_length = len(dna_data[0])
+                end_idx = dna_length
+            else:
+                # Only one single Sequence
+                last_seq = True
+                dna_last_seq = dna_data[i][:dna_length + 1 + start_idx]
+                # find padding index
+                end_idx = len(dna_last_seq) - dna_last_seq[::-1].index('A') - 1
         else:
             # Padding sequence decoding
             if i == len(dna_data) - 1:
